@@ -1,5 +1,6 @@
 #include "callerdatawindow.h"
 #include "ui_callerdatawindow.h"
+#include "comment/comment.h"
 
 static const char* const kAccountInfoQuery =
         "/accounts/%1/zzhds/hd_info?consumer_accountId=%2&md5=%3";
@@ -275,31 +276,35 @@ void CallerDataWindow::retrieveCommentsListFinished()
 
     m_commentsDataValue = document.object().value("data");
 
-
-
-//    auto *lw = new QListWidget(this);
-//ui->listWidget->addItem("The Omen");
-//ui->listWidget->setSpacing(3);
-//      ui->listWidget->addItem("The Exorcist");
-//QLabel *messageLabel = new QLabel("message+\n<i style='font-size:7px;'>Sent by: sender</i>");
-//     ui->scrollArea->addScrollBarWidget(messageLabel, Qt::Alignment(center);
-//      ui->listWidget->addItem("Fargo");
-//     ui->listWidget->addItem("Capote");
-
-
     if (m_commentsDataValue.isArray()) {
         QJsonArray dataArray = m_commentsDataValue.toArray();
 
         qDebug() << "\n CallerDataWindow::retrieveCommentsListFinished dataArray: " << dataArray << "\n";
-
-
-//        for (int i = 0; i < dataArray.count(); i++) {
-//            QJsonObject AccountObj = dataArray.at(i).toObject();
-//            QListWidgetItem* newItem = new QListWidgetItem;
-//            newItem->setData(1, AccountObj.value("id").toString());
-//            newItem->setText(AccountObj.value("name").toString());
-//            ui->accountsListWidget->addItem(newItem);
-//        }
+        for (int i = 0; i < dataArray.count(); i++) {
+            QJsonObject AccountObj = dataArray.at(i).toObject();
+            Comment *commentBox = new Comment(this);
+            commentBox->setAcceptRichText(true);
+            commentBox->setReadOnly(true);
+            commentBox->setContextMenuPolicy( Qt::CustomContextMenu );
+            commentBox->setCommentHTML("<span style='font-size:14px;'><i>Sent by: '+' sender '+' </i><br />" + AccountObj.value("comment").toString() + "</span>");
+            ui->commentsLayout->addWidget(commentBox);
+        }
     }
-//    ui->total_digits_label->setText(QString("%1").arg(ui->accountsListWidget->count()));
+}
+
+
+void CallerDataWindow::on_label_2_linkActivated(const QString &link)
+{
+    qDebug() << "\n CallerDataWindow::on_label_2_linkActivated link: " << link << "\n";
+}
+
+
+void CallerDataWindow::on_label_2_linkHovered(const QString &link)
+{
+    qDebug() << "\n CallerDataWindow::on_label_2_linkHovered link: " << link << "\n";
+}
+
+void CallerDataWindow::on_message_clicked()
+{
+    qDebug() << "\n CallerDataWindow::on_message_clicked text: "  << "\n";
 }

@@ -28,6 +28,7 @@ SOURCES += \
     accountlookupdialog/accountlookupdialog.cpp \
     alltaskslistwindow/alltaskslist.cpp \
     callerdatawindow/callerdatawindow.cpp \
+    comment/comment.cpp \
     debugdialog/debugdialog.cpp \
     informerdialog/informerdialog.cpp \
     kazoo_auth/kazoo_auth.cpp \
@@ -41,6 +42,7 @@ HEADERS  += \
     accountlookupdialog/accountlookupdialog.h \
     alltaskslistwindow/alltaskslist.h \
     callerdatawindow/callerdatawindow.h \
+    comment/comment.h \
     debugdialog/debugdialog.h \
     informerdialog/informerdialog.h \
     defaults.h \

@@ -59,6 +59,9 @@ class CallerDataWindow : public QMainWindow {
 
 private slots:
     void on_consumer_tabWidget_tabBarClicked(int index);
+    void on_label_2_linkActivated(const QString &link);
+    void on_label_2_linkHovered(const QString &link);
+    void on_message_clicked();
 };
 
 #endif // CALLERDATAWINDOW_H
