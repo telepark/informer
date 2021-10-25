@@ -13,9 +13,15 @@ class Comment : public QTextEdit
 public:
     explicit Comment(QWidget *parent = nullptr): QTextEdit(parent){  }
     void setCommentHTML(QString commentHTML);
+    void setInformerId(int informerId);
+    void setCreated(int created);
+    void setModified(int modified);
 
 private:
     QString m_commentHTML;
+    int m_informerId;
+    int m_created;
+    int m_modified;
 
 protected:
     void focusInEvent(QFocusEvent* e);

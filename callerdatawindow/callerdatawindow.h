@@ -16,6 +16,7 @@
 #include <QJsonValue>
 #include <QJsonArray>
 #include <QLocale>
+#include <QLabel>
 
 #include "kazoo_auth/kazoo_auth.h"
 #include "defaults.h"

@@ -282,12 +282,21 @@ void CallerDataWindow::retrieveCommentsListFinished()
         qDebug() << "\n CallerDataWindow::retrieveCommentsListFinished dataArray: " << dataArray << "\n";
         for (int i = 0; i < dataArray.count(); i++) {
             QJsonObject AccountObj = dataArray.at(i).toObject();
-            Comment *commentBox = new Comment(this);
+            QWidget* widget = new QWidget();
+            Comment *commentBox = new Comment(widget);
             commentBox->setAcceptRichText(true);
             commentBox->setReadOnly(true);
             commentBox->setContextMenuPolicy( Qt::CustomContextMenu );
             commentBox->setCommentHTML("<span style='font-size:14px;'><i>Sent by: '+' sender '+' </i><br />" + AccountObj.value("comment").toString() + "</span>");
-            ui->commentsLayout->addWidget(commentBox);
+            commentBox->setInformerId(AccountObj.value("informer_id").toInt());
+            commentBox->setCreated(AccountObj.value("created").toInt());
+            commentBox->setModified(AccountObj.value("modified").toInt());
+//            ui->commentsLayout->addWidget(commentBox);
+            QLabel *comment_label = new QLabel("hello", widget);
+            QVBoxLayout* comment_layout = new QVBoxLayout(widget);
+            comment_layout->addWidget(comment_label);
+            comment_layout->addWidget(commentBox);
+            ui->commentsLayout->addWidget(widget);
         }
     }
 }

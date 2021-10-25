@@ -77,6 +77,25 @@ void Comment::DeleteActionSlot()
 
 void Comment::setCommentHTML(QString commentHTML)
 {
+
+//    QDateTime timestamp;
+//    timestamp.setTime_t(unixTime);
+//    qDebug() << timestamp.toString(Qt::SystemLocaleShortDate);
+
     m_commentHTML = commentHTML;
     this->setHtml(m_commentHTML);
+}
+
+void Comment::setInformerId(int informerId)
+{
+    m_informerId = informerId;
+}
+
+void Comment::setCreated(int created)
+{
+    m_created = created;
+}
+void Comment::setModified(int modified)
+{
+    m_modified = modified;
 }
