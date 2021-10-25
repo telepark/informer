@@ -78,9 +78,6 @@ void Comment::DeleteActionSlot()
 void Comment::setCommentHTML(QString commentHTML)
 {
 
-//    QDateTime timestamp;
-//    timestamp.setTime_t(unixTime);
-//    qDebug() << timestamp.toString(Qt::SystemLocaleShortDate);
 
     m_commentHTML = commentHTML;
     this->setHtml(m_commentHTML);

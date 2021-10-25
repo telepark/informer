@@ -291,8 +291,25 @@ void CallerDataWindow::retrieveCommentsListFinished()
             commentBox->setInformerId(AccountObj.value("informer_id").toInt());
             commentBox->setCreated(AccountObj.value("created").toInt());
             commentBox->setModified(AccountObj.value("modified").toInt());
-//            ui->commentsLayout->addWidget(commentBox);
-            QLabel *comment_label = new QLabel("hello", widget);
+
+            QLocale locale(QLocale("ru_RU"));
+            QDateTime comment_date;
+            comment_date.fromSecsSinceEpoch(AccountObj.value("created").toInteger());
+            qDebug() << "Created: " << AccountObj.value("created").toInt() << "\n";
+            qDebug() << "fromSecsSinceEpoch: " << comment_date.fromSecsSinceEpoch(AccountObj.value("created").toInteger())<< "\n";
+
+
+            qDebug() << "comment_date.date: " << comment_date.date().toString() << "\n";
+            qDebug() << "Locale string: " << locale.toString(comment_date) << "\n";
+            QString comment_label_string =
+                    locale.toString(comment_date.fromSecsSinceEpoch(AccountObj.value("modified").toInteger()))
+                    + " (создано: "
+                    + locale.toString(comment_date.fromSecsSinceEpoch(AccountObj.value("created").toInteger()), "yyyy-M-d")
+                    + ")";
+            QLabel *comment_label = new QLabel(comment_label_string, widget);
+
+
+
             QVBoxLayout* comment_layout = new QVBoxLayout(widget);
             comment_layout->addWidget(comment_label);
             comment_layout->addWidget(commentBox);
