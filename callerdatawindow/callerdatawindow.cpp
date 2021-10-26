@@ -5,7 +5,7 @@
 static const char* const kAccountInfoQuery =
         "/accounts/%1/zzhds/hd_info?consumer_accountId=%2&md5=%3";
 
-static const char* const kPutCommentQuery =
+static const char* const kPostCommentQuery =
         "/accounts/%1/zzhds/hd_comments";
 
 static const char* const kGetCommentQuery =
@@ -81,11 +81,6 @@ void CallerDataWindow::retrieveConsumerInfoFinished()
 
     m_lbId = respData.value("lb_id").toInteger();
     m_informerId = respData.value("informer_id").toInteger();
-
-    qDebug() << "\n informer_id INT: " << respData.value("informer_id").toInteger() << "\n";
-    qDebug() << "\n informer_id String: " << respData.value("informer_id").toString() << "\n";
-
-
 
     qDebug() << "\n Setting m_informerId: " << m_informerId << "\n";
 
@@ -171,7 +166,8 @@ void CallerDataWindow::on_some_pushButton_clicked()
     //    jsonData["credentials"] = hash.data();
     qDebug() << "\n Putting  m_informerId to jsonData: " << m_informerId << "\n";
     jsonData["informer_id"] = m_informerId;
-    jsonData["comment"] = ui->textEdit->toPlainText();
+    jsonData["comment_text"] = ui->textEdit->toPlainText();
+    jsonData["comment_html"] = ui->textEdit->toHtml();
     jsonObject["data"] = jsonData;
     QJsonDocument jsonDocument(jsonObject);
     QByteArray json = jsonDocument.toJson();
@@ -186,9 +182,8 @@ void CallerDataWindow::on_some_pushButton_clicked()
     config.setProtocol(QSsl::AnyProtocol);
     req.setSslConfiguration(config);
 
-
     QString url(m_settings->value("info_url", kInfoUrl).toString());
-    url.append(kPutCommentQuery);
+    url.append(kPostCommentQuery);
     req.setUrl(QUrl(url.arg(KAZOOAUTH.accountId().toLatin1())));
     qDebug() << "\n req.url(): \n" << req.url() << "\n";
 
@@ -212,13 +207,21 @@ void CallerDataWindow::addCommentFinished()
         return;
     }
     qDebug() << "\n DocumentObject: " << document.object() << "\n";
+    retrieveCommentsList();
     ui->textEdit->clear();
+    ui->consumer_tabWidget->setCurrentIndex(1);
 }
 
 void CallerDataWindow::on_consumer_tabWidget_tabBarClicked(int index)
 {
     qDebug() << "\n CallerDataWindow::on_consumer_tabWidget_tabBarClicked index: " << index << "\n";
     if (index == 1) retrieveCommentsList();
+}
+
+void CallerDataWindow::onCommentUpdated(int commentId)
+{
+    qDebug() << "onCommentUpdated commentId: " << commentId << "\n";
+    retrieveCommentsList();
 }
 
 void CallerDataWindow::retrieveCommentsList()
@@ -260,10 +263,6 @@ void CallerDataWindow::retrieveCommentsListFinished()
     QByteArray data = reply->readAll();
     reply->deleteLater();
 
-    qDebug() << "\n Inside CallerDataWindow::retrieveCommentsListFinished reply->error: " << reply->error() <<  "\n";
-
-    qDebug() << "\n Inside CallerDataWindow::retrieveCommentsListFinished data: " << data <<  "\n";
-
     QJsonParseError error;
     QJsonDocument document = QJsonDocument::fromJson(data, &error);
 
@@ -279,58 +278,45 @@ void CallerDataWindow::retrieveCommentsListFinished()
     if (m_commentsDataValue.isArray()) {
         QJsonArray dataArray = m_commentsDataValue.toArray();
 
+        QLayoutItem* child;
+        child=ui->commentsLayout->takeAt(0);
+        while(child != 0)
+        {
+            if(child->widget())
+                delete child->widget();
+            delete child;
+            child=ui->commentsLayout->takeAt(0);
+        }
+
         qDebug() << "\n CallerDataWindow::retrieveCommentsListFinished dataArray: " << dataArray << "\n";
         for (int i = 0; i < dataArray.count(); i++) {
             QJsonObject AccountObj = dataArray.at(i).toObject();
             QWidget* widget = new QWidget();
             Comment *commentBox = new Comment(widget);
+            connect(commentBox,&Comment::commentUpdated, this, &CallerDataWindow::onCommentUpdated);
+
             commentBox->setAcceptRichText(true);
             commentBox->setReadOnly(true);
             commentBox->setContextMenuPolicy( Qt::CustomContextMenu );
-            commentBox->setCommentHTML("<span style='font-size:14px;'><i>Sent by: '+' sender '+' </i><br />" + AccountObj.value("comment").toString() + "</span>");
+            commentBox->setCommentHTML(AccountObj.value("comment_html").toString());
             commentBox->setInformerId(AccountObj.value("informer_id").toInt());
+            commentBox->setCommentId(AccountObj.value("comment_id").toInt());
             commentBox->setCreated(AccountObj.value("created").toInt());
             commentBox->setModified(AccountObj.value("modified").toInt());
 
             QLocale locale(QLocale("ru_RU"));
             QDateTime comment_date;
             comment_date.fromSecsSinceEpoch(AccountObj.value("created").toInteger());
-            qDebug() << "Created: " << AccountObj.value("created").toInt() << "\n";
-            qDebug() << "fromSecsSinceEpoch: " << comment_date.fromSecsSinceEpoch(AccountObj.value("created").toInteger())<< "\n";
-
-
-            qDebug() << "comment_date.date: " << comment_date.date().toString() << "\n";
-            qDebug() << "Locale string: " << locale.toString(comment_date) << "\n";
             QString comment_label_string =
                     locale.toString(comment_date.fromSecsSinceEpoch(AccountObj.value("modified").toInteger()))
                     + " (создано: "
                     + locale.toString(comment_date.fromSecsSinceEpoch(AccountObj.value("created").toInteger()), "yyyy-M-d")
                     + ")";
             QLabel *comment_label = new QLabel(comment_label_string, widget);
-
-
-
             QVBoxLayout* comment_layout = new QVBoxLayout(widget);
             comment_layout->addWidget(comment_label);
             comment_layout->addWidget(commentBox);
             ui->commentsLayout->addWidget(widget);
         }
     }
-}
-
-
-void CallerDataWindow::on_label_2_linkActivated(const QString &link)
-{
-    qDebug() << "\n CallerDataWindow::on_label_2_linkActivated link: " << link << "\n";
-}
-
-
-void CallerDataWindow::on_label_2_linkHovered(const QString &link)
-{
-    qDebug() << "\n CallerDataWindow::on_label_2_linkHovered link: " << link << "\n";
-}
-
-void CallerDataWindow::on_message_clicked()
-{
-    qDebug() << "\n CallerDataWindow::on_message_clicked text: "  << "\n";
 }
