@@ -59,7 +59,7 @@ protected:
     void mousePressEvent(QMouseEvent *e);
 
 signals:
-    void commentUpdated(int commentId);
+    void commentUpdated(int);
 
 public  slots:
     void SaveActionSlot();

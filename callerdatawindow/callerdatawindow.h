@@ -51,17 +51,15 @@ class CallerDataWindow : public QMainWindow {
     QString m_phone_number = "";
     QJsonObject m_kazooDataJObj = {};
     QSettings* m_settings = nullptr;
-    //    QNetworkAccessManager* m_nam = nullptr;
     QNetworkAccessManager* m_nam = new QNetworkAccessManager(this);
     QJsonValue m_commentsDataValue;
 
-
-  public slots:
+public slots:
     void on_some_pushButton_clicked();
-    void onCommentUpdated(int commentId);
+    void onCommentUpdated(int);
 
 private slots:
-    void on_consumer_tabWidget_tabBarClicked(int index);
+    void on_consumer_tabWidget_tabBarClicked(int);
 };
 
 #endif // CALLERDATAWINDOW_H

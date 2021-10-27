@@ -1,6 +1,7 @@
 #include "callerdatawindow.h"
 #include "ui_callerdatawindow.h"
 #include "comment/comment.h"
+#include "comment/commentscontainer.h"
 
 static const char* const kAccountInfoQuery =
         "/accounts/%1/zzhds/hd_info?consumer_accountId=%2&md5=%3";
@@ -277,46 +278,7 @@ void CallerDataWindow::retrieveCommentsListFinished()
 
     if (m_commentsDataValue.isArray()) {
         QJsonArray dataArray = m_commentsDataValue.toArray();
-
-        QLayoutItem* child;
-        child=ui->commentsLayout->takeAt(0);
-        while(child != 0)
-        {
-            if(child->widget())
-                delete child->widget();
-            delete child;
-            child=ui->commentsLayout->takeAt(0);
-        }
-
-        qDebug() << "\n CallerDataWindow::retrieveCommentsListFinished dataArray: " << dataArray << "\n";
-        for (int i = 0; i < dataArray.count(); i++) {
-            QJsonObject AccountObj = dataArray.at(i).toObject();
-            QWidget* widget = new QWidget();
-            Comment *commentBox = new Comment(widget);
-            connect(commentBox,&Comment::commentUpdated, this, &CallerDataWindow::onCommentUpdated);
-
-            commentBox->setAcceptRichText(true);
-            commentBox->setReadOnly(true);
-            commentBox->setContextMenuPolicy( Qt::CustomContextMenu );
-            commentBox->setCommentHTML(AccountObj.value("comment_html").toString());
-            commentBox->setInformerId(AccountObj.value("informer_id").toInt());
-            commentBox->setCommentId(AccountObj.value("comment_id").toInt());
-            commentBox->setCreated(AccountObj.value("created").toInt());
-            commentBox->setModified(AccountObj.value("modified").toInt());
-
-            QLocale locale(QLocale("ru_RU"));
-            QDateTime comment_date;
-            comment_date.fromSecsSinceEpoch(AccountObj.value("created").toInteger());
-            QString comment_label_string =
-                    locale.toString(comment_date.fromSecsSinceEpoch(AccountObj.value("modified").toInteger()))
-                    + " (создано: "
-                    + locale.toString(comment_date.fromSecsSinceEpoch(AccountObj.value("created").toInteger()), "yyyy-M-d")
-                    + ")";
-            QLabel *comment_label = new QLabel(comment_label_string, widget);
-            QVBoxLayout* comment_layout = new QVBoxLayout(widget);
-            comment_layout->addWidget(comment_label);
-            comment_layout->addWidget(commentBox);
-            ui->commentsLayout->addWidget(widget);
-        }
+        CommentsContainer* commentContainer = new CommentsContainer;
+        commentContainer->addComments(ui->commentsLayout, dataArray, this);
     }
 }

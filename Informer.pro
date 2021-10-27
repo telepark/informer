@@ -29,6 +29,7 @@ SOURCES += \
     alltaskslistwindow/alltaskslist.cpp \
     callerdatawindow/callerdatawindow.cpp \
     comment/comment.cpp \
+    comment/commentscontainer.cpp \
     debugdialog/debugdialog.cpp \
     informerdialog/informerdialog.cpp \
     kazoo_auth/kazoo_auth.cpp \
@@ -43,6 +44,7 @@ HEADERS  += \
     alltaskslistwindow/alltaskslist.h \
     callerdatawindow/callerdatawindow.h \
     comment/comment.h \
+    comment/commentscontainer.h \
     debugdialog/debugdialog.h \
     informerdialog/informerdialog.h \
     defaults.h \
