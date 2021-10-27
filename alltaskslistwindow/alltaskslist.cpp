@@ -3,6 +3,8 @@
 
 #include "comment/commentscontainer.h"
 
+#include <QPushButton>
+
 static const char* const kGetAllCommentsQuery =
         "/accounts/%1/zzhds/hd_comments?md5=%3";
 
@@ -11,6 +13,14 @@ AllTasksList::AllTasksList(QWidget *parent) :
     ui(new Ui::AllTasksList)
 {
     ui->setupUi(this);
+
+//    QWidget * widget = new QWidget();
+//    QPushButton  * leftBut = new QPushButton("Left");
+//    QPushButton  * rightBut = new QPushButton("Right");
+//    QGridLayout * layout = new QGridLayout(widget);
+//    layout->addWidget(leftBut,0,0,0,0,Qt::AlignVCenter | Qt::AlignLeft);
+//    layout->addWidget(rightBut,0,0,0,0,Qt::AlignVCenter | Qt::AlignRight);
+//    this->ui->statusbar->addWidget(widget,1);
 
     retrieveCommentsList();
 }
@@ -92,6 +102,6 @@ void AllTasksList::handleConnectionError()
 
 void AllTasksList::onCommentUpdated(int commentId)
 {
-    qDebug() << "onCommentUpdated commentId: " << commentId << "\n";
+    qDebug() << "AllTasksList::onCommentUpdated commentId: " << commentId << "\n";
     retrieveCommentsList();
 }

@@ -1,5 +1,11 @@
 #include "commentscontainer.h"
 
+#include <QWidget>
+#include <QApplication>
+
+#include "alltaskslistwindow/alltaskslist.h"
+
+
 CommentsContainer::CommentsContainer(QObject *parent) : QObject(parent)
 {
 
@@ -47,5 +53,11 @@ void CommentsContainer::addComments(QVBoxLayout* container_layout, QJsonArray da
         comment_layout->addWidget(commentBox);
         container_layout->addWidget(widget);
         connect(commentBox, SIGNAL(commentUpdated(int)), parent_window, SLOT(onCommentUpdated(int)));
+
+        foreach (QWidget *w, QApplication::topLevelWidgets())
+            if (AllTasksList* allTaskWin = qobject_cast<AllTasksList*>(w))
+                connect(commentBox, SIGNAL(commentUpdated(int)), allTaskWin, SLOT(onCommentUpdated(int)));
+
+
     }
 }

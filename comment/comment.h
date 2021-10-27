@@ -42,6 +42,7 @@ public:
 
 private:
     QString m_commentHTML;
+    QString m_informerName;
     int m_informerId;
     int m_created;
     int m_modified;

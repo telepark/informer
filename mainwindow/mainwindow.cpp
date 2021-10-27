@@ -96,8 +96,9 @@ void MainWindow::createTrayIcon()
 #if defined(Q_OS_MAC) || defined(Q_OS_WIN)
     menu->addAction(tr("Update"), this, SLOT(updateApp()));
 #endif
-    menu->addAction(tr("Opened tasks"), this, SLOT(showOpenedTasksDialog()));
+    menu->addAction(tr("All comments"), this, SLOT(showOpenedTasksDialog()));
     menu->addAction(tr("Account lookup"), this, SLOT(showAccountLookupDialog()));
+    menu->addSeparator();
     menu->addAction(tr("Settings"), this, SLOT(show()));
     menu->addAction(tr("Debug logs"), this, SLOT(showDebugDialog()));
     menu->addAction(tr("Close all popups"), this, SLOT(closeAllPopups()));

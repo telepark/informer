@@ -78,7 +78,6 @@ void Comment::EditActionSlot()
     qDebug() << "\n Comment::EditActionSlot() this->isReadOnly() 1 : "  << this->isReadOnly() << "\n";
     this->setReadOnly(false);
     qDebug() << "\n Comment::EditActionSlot() this->isReadOnly() 2 : "  << this->isReadOnly() << "\n";
-
 }
 void Comment::DeleteActionSlot()
 {
