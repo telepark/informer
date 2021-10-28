@@ -4,8 +4,8 @@
 #include <QAction>
 #include <QAction>
 
-static const char* const kPostCommentQuery =
-        "/accounts/%1/zzhds/hd_comments";
+static const char* const kCommentQuery =
+        "/accounts/%1/zzhds/hd_comments/%2";
 
 void Comment::focusInEvent(QFocusEvent* e)
 {
@@ -82,6 +82,29 @@ void Comment::EditActionSlot()
 void Comment::DeleteActionSlot()
 {
     qDebug() << "\n Comment::DeleteActionSlot() \n";
+    QNetworkRequest req;
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    req.setRawHeader("X-Auth-Token", KAZOOAUTH.authToken().toLatin1());
+    /* Setup SSL */
+    QSslConfiguration config = req.sslConfiguration();
+    config.setPeerVerifyMode(QSslSocket::VerifyNone);
+    config.setProtocol(QSsl::AnyProtocol);
+    req.setSslConfiguration(config);
+    qDebug() << "\n 555 settings: " << m_settings->value("info_url", kInfoUrl) << "\n";
+
+    QString url(m_settings->value("info_url", kInfoUrl).toString());
+
+    url.append(kCommentQuery);
+    qDebug() << "\n Comment::DeleteActionSlot m_commentId: " << m_commentId << "\n";
+
+    req.setUrl(QUrl(url.arg(KAZOOAUTH.accountId().toLatin1(),QString::number(m_commentId))));
+    qDebug() << "\n Comment::DeleteActionSlot req.url(): \n" << req.url() << "\n";
+
+    QNetworkReply* reply = m_nam->deleteResource(req);
+    connect(reply, &QNetworkReply::finished,
+            this, &Comment::updateCommentFinished);
+    connect(reply, &QNetworkReply::errorOccurred,
+            this, &Comment::handleConnectionError);
 }
 
 void Comment::setCommentHTML(QString commentHTML)
@@ -144,11 +167,12 @@ void Comment::updateComment()
     QString url(m_settings->value("info_url", kInfoUrl).toString());
     qDebug() << "\n 666 \n";
 
-    url.append(kPostCommentQuery);
+    url.append(kCommentQuery);
     qDebug() << "\n 777 \n";
+    qDebug() << "\n Comment::updateComment m_commentId: " << m_commentId << "\n";
 
-    req.setUrl(QUrl(url.arg(KAZOOAUTH.accountId().toLatin1())));
-    qDebug() << "\n req.url(): \n" << req.url() << "\n";
+    req.setUrl(QUrl(url.arg(KAZOOAUTH.accountId().toLatin1(), QString::number(m_commentId))));
+    qDebug() << "\n Comment::updateComment req.url(): \n" << req.url() << "\n";
 
     QNetworkReply* reply = m_nam->put(req, json);
     connect(reply, &QNetworkReply::finished,
