@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QHash>
 
+#include "alltaskslistwindow/alltaskslist.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -14,16 +16,16 @@ class WebSocketManager;
 class InformerDialog;
 class DebugDialog;
 class AccountLookupDialog;
-class AllTasksList;
+//class AllTasksList;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
-  public:
+public:
     explicit MainWindow(QWidget* parent = 0);
     ~MainWindow();
 
-  private:
+private:
     void createTrayIcon();
     bool isCorrectSettings() const;
 
@@ -35,12 +37,15 @@ class MainWindow : public QMainWindow {
     QHash<QString, QTimer*> m_timersHash;
 
     WebSocketManager* m_wsMan;
+    AllTasksList* m_alltaskslist;
 
     DebugDialog* m_debugDialog = nullptr;
     AccountLookupDialog* m_accountLookupDialog = nullptr;
-    AllTasksList* m_alltaskslist = nullptr;
+    //    AllTasksList* m_alltaskslist = new AllTasksList(this);
+    //    AllTasksList* m_alltaskslist = nullptr;
 
-  private slots:
+
+private slots:
     void onChannelCreated(const QString& callId, const QString& callerIdName,
                           const QString& callerIdNumber, const QString& callerDialed);
     void onChannelAnswered(const QString& callId);

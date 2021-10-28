@@ -32,7 +32,7 @@ class QMouseEvent;
 class CallerDataWindow : public QMainWindow {
     Q_OBJECT
 
-  public:
+public:
     explicit CallerDataWindow(QWidget* parent = nullptr);
     ~CallerDataWindow();
 
@@ -43,7 +43,7 @@ class CallerDataWindow : public QMainWindow {
     void retrieveCommentsList();
     void retrieveCommentsListFinished();
 
-  private:
+private:
     Ui::CallerDataWindow* ui;
     QString m_consumer_accountId = "";
     int m_lbId;
@@ -60,6 +60,10 @@ public slots:
 
 private slots:
     void on_consumer_tabWidget_tabBarClicked(int);
+
+signals:
+    void commentAdded(int);
+
 };
 
 #endif // CALLERDATAWINDOW_H

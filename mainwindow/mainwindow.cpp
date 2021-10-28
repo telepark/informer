@@ -7,7 +7,6 @@
 #include "websocketmanager/websocketmanager.h"
 #include "debugdialog/debugdialog.h"
 #include "accountlookupdialog/accountlookupdialog.h"
-#include "alltaskslistwindow/alltaskslist.h"
 
 #if defined(Q_OS_MAC) || defined(Q_OS_WIN)
     #include "updatemanager.h"
@@ -47,6 +46,8 @@ MainWindow::MainWindow(QWidget* parent) :
     qDebug("Informer was started");
 
     m_wsMan = new WebSocketManager(this);
+    m_alltaskslist = new AllTasksList(this);
+
     connect(m_wsMan, &WebSocketManager::channelCreated,
             this, &MainWindow::onChannelCreated);
     connect(m_wsMan, &WebSocketManager::channelAnswered,
@@ -492,6 +493,7 @@ void MainWindow::showOpenedTasksDialog()
         m_alltaskslist->activateWindow();
         m_alltaskslist->raise();
     } else {
+        m_alltaskslist->retrieveCommentsList();
         m_alltaskslist->show();
     }
 }

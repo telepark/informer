@@ -13,7 +13,6 @@ CommentsContainer::CommentsContainer(QObject *parent) : QObject(parent)
 
 void CommentsContainer::addComments(QVBoxLayout* container_layout, QJsonArray dataArray, QMainWindow* parent_window)
 {
-
     QLayoutItem* child;
     child=container_layout->takeAt(0);
     while(child != 0)
@@ -31,7 +30,7 @@ void CommentsContainer::addComments(QVBoxLayout* container_layout, QJsonArray da
         int commentId = AccountObj.value("comment_id").toInt();
         commentBox->setAcceptRichText(true);
         commentBox->setReadOnly(true);
-        commentBox->setContextMenuPolicy( Qt::CustomContextMenu );
+        commentBox->setContextMenuPolicy(Qt::CustomContextMenu);
         commentBox->setCommentHTML(AccountObj.value("comment_html").toString());
         commentBox->setInformerId(AccountObj.value("informer_id").toInt());
         commentBox->setCommentId(commentId);
@@ -56,7 +55,5 @@ void CommentsContainer::addComments(QVBoxLayout* container_layout, QJsonArray da
         foreach (QWidget *w, QApplication::topLevelWidgets())
             if (AllTasksList* allTaskWin = qobject_cast<AllTasksList*>(w))
                 connect(commentBox, SIGNAL(commentUpdated(int)), allTaskWin, SLOT(onCommentUpdated(int)));
-
-
     }
 }

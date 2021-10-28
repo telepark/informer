@@ -1,7 +1,10 @@
+#include <QApplication>
+
 #include "callerdatawindow.h"
 #include "ui_callerdatawindow.h"
 #include "comment/comment.h"
 #include "comment/commentscontainer.h"
+#include "alltaskslistwindow/alltaskslist.h"
 
 static const char* const kAccountInfoQuery =
         "/accounts/%1/zzhds/hd_info?consumer_accountId=%2&md5=%3";
@@ -18,6 +21,10 @@ CallerDataWindow::CallerDataWindow(QWidget* parent) :
     ui(new Ui::CallerDataWindow)
 {
     ui->setupUi(this);
+    foreach (QWidget *w, QApplication::topLevelWidgets())
+        if (AllTasksList* allTaskWin = qobject_cast<AllTasksList*>(w))
+            connect(this, SIGNAL(commentAdded(int)), allTaskWin, SLOT(onCommentUpdated(int)));
+
 }
 
 CallerDataWindow::~CallerDataWindow()
@@ -206,6 +213,7 @@ void CallerDataWindow::addCommentFinished()
     retrieveCommentsList();
     ui->textEdit->clear();
     ui->consumer_tabWidget->setCurrentIndex(1);
+    emit commentAdded(0);
 }
 
 void CallerDataWindow::on_consumer_tabWidget_tabBarClicked(int index)

@@ -22,7 +22,7 @@ AllTasksList::AllTasksList(QWidget *parent) :
 //    layout->addWidget(rightBut,0,0,0,0,Qt::AlignVCenter | Qt::AlignRight);
 //    this->ui->statusbar->addWidget(widget,1);
 
-    retrieveCommentsList();
+//    retrieveCommentsList();
 }
 
 AllTasksList::~AllTasksList()
