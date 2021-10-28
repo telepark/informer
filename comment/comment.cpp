@@ -8,10 +8,8 @@ static const char* const kCommentQuery = "/accounts/%1/zzhds/hd_comments/%2";
 
 void Comment::focusInEvent(QFocusEvent* e)
 {
-    qDebug() << "\n focusInEvent 1 " << e << "\n";
     if (e->reason() == Qt::MouseFocusReason)
     {
-        qDebug() << "\n focusInEvent 2 \n";
         this->setFixedHeight( 200 + 3 );
     }
     else
@@ -22,14 +20,11 @@ void Comment::focusOutEvent(QFocusEvent* e)
 {
     if (e->reason() == Qt::MouseFocusReason)
     {
-        qDebug() << "\n focusOutEvent 2 \n";
         this->setFixedHeight( 100 + 3 );
-
     }
     else
         QTextEdit::focusInEvent(e);
 }
-
 
 void Comment::mousePressEvent(QMouseEvent *event)
 {
