@@ -78,8 +78,6 @@ void AllTasksList::retrieveCommentsListFinished()
         return;
     }
 
-    qDebug() << "\n CallerDataWindow::retrieveCommentsListFinished document: " << document << "\n";
-
     m_commentsDataValue = document.object().value("data");
 
     if (m_commentsDataValue.isArray()) {

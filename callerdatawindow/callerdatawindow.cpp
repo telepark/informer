@@ -72,8 +72,6 @@ void CallerDataWindow::retrieveConsumerInfoFinished()
         return;
     }
 
-    qDebug() << "\n DocumentObject: " << document.object() << "\n";
-
     QJsonObject respData = document.object().value("data").toObject();
 
     auto russian_locale = QLocale("ru_RU");
@@ -82,8 +80,6 @@ void CallerDataWindow::retrieveConsumerInfoFinished()
 
     m_lbId = respData.value("lb_id").toInteger();
     m_informerId = respData.value("informer_id").toInteger();
-
-    qDebug() << "\n Setting m_informerId: " << m_informerId << "\n";
 
     if (!account_balance.isNull()) {
         ui->optional_comment1_label->setText("Balance: " + account_balance);
@@ -207,7 +203,6 @@ void CallerDataWindow::addCommentFinished()
     if (error.error != QJsonParseError::NoError) {
         return;
     }
-    qDebug() << "\n DocumentObject: " << document.object() << "\n";
     retrieveCommentsList();
     ui->textEdit->clear();
     ui->consumer_tabWidget->setCurrentIndex(1);
@@ -272,10 +267,7 @@ void CallerDataWindow::retrieveCommentsListFinished()
         return;
     }
 
-    qDebug() << "\n CallerDataWindow::retrieveCommentsListFinished document: " << document << "\n";
-
     m_commentsDataValue = document.object().value("data");
-
     if (m_commentsDataValue.isArray()) {
         QJsonArray dataArray = m_commentsDataValue.toArray();
         CommentsContainer* commentContainer = new CommentsContainer;

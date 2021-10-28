@@ -24,7 +24,6 @@ void CommentsContainer::addComments(QVBoxLayout* container_layout, QJsonArray da
         child=container_layout->takeAt(0);
     }
 
-    qDebug() << "\n CallerDataWindow::retrieveCommentsListFinished dataArray: " << dataArray << "\n";
     for (int i = 0; i < dataArray.count(); i++) {
         QJsonObject AccountObj = dataArray.at(i).toObject();
         QWidget* widget = new QWidget();

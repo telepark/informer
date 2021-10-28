@@ -209,8 +209,6 @@ void InformerDialog::retrieveCallerInfoFinished()
         return;
     }
 
-    qDebug() << "\n DocumentObject: " << document.object() << "\n";
-
     QJsonObject respData = document.object().value("data").toObject();
     QJsonObject accountInfo = respData.value("account_info").toObject();
     QString kazooAccountId = respData.value("kazoo_account_id").toString();
