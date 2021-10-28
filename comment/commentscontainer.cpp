@@ -26,6 +26,7 @@ void CommentsContainer::addComments(QVBoxLayout* container_layout, QJsonArray da
     for (int i = 0; i < dataArray.count(); i++) {
         QJsonObject AccountObj = dataArray.at(i).toObject();
         QWidget* widget = new QWidget();
+        QWidget* labelWidget = new QWidget();
         Comment *commentBox = new Comment(widget);
         int commentId = AccountObj.value("comment_id").toInt();
         commentBox->setAcceptRichText(true);
@@ -45,9 +46,22 @@ void CommentsContainer::addComments(QVBoxLayout* container_layout, QJsonArray da
                 + " (создано: "
                 + locale.toString(comment_date.fromSecsSinceEpoch(AccountObj.value("created").toInteger()), "yyyy-M-d")
                 + ")";
-        QLabel *comment_label = new QLabel(comment_label_string, widget);
+        QLabel *comment_label = new QLabel(comment_label_string, labelWidget);
+        qDebug() << "AccountObj.value(informer_name)" <<  AccountObj.value("informer_name").toString("NoName") << "\n";
+        QString informerName_label_string =
+                "<a href='" + QString::number(AccountObj.value("informer_id").toInt()) + "'>"
+                + AccountObj.value("informer_name").toString("")
+                + "</a>";
+        QLabel *informerName_label = new QLabel(informerName_label_string, labelWidget);
+        informerName_label->setTextFormat(Qt::RichText);
+        informerName_label->setOpenExternalLinks(false);
+        informerName_label->setStyleSheet("font-weight: bold; color: red");
+        connect(informerName_label, SIGNAL(linkActivated(QString)), this, SLOT(on_linkActivated(QString)));
+        QHBoxLayout* labels_layout = new QHBoxLayout(labelWidget);
+        labels_layout->addWidget(informerName_label);
+        labels_layout->addWidget(comment_label);
         QVBoxLayout* comment_layout = new QVBoxLayout(widget);
-        comment_layout->addWidget(comment_label);
+        comment_layout->addWidget(labelWidget);
         comment_layout->addWidget(commentBox);
         container_layout->addWidget(widget);
         connect(commentBox, SIGNAL(commentUpdated(int)), parent_window, SLOT(onCommentUpdated(int)));
@@ -56,4 +70,12 @@ void CommentsContainer::addComments(QVBoxLayout* container_layout, QJsonArray da
             if (AllTasksList* allTaskWin = qobject_cast<AllTasksList*>(w))
                 connect(commentBox, SIGNAL(commentUpdated(int)), allTaskWin, SLOT(onCommentUpdated(int)));
     }
+}
+
+void CommentsContainer::on_linkActivated(QString link)
+{
+    qDebug() << "\n CommentsContainer::on_linkActivated link: " << link << "\n";
+    CallerDataWindow* callerdatawindow = new CallerDataWindow();
+    callerdatawindow->show();
+    callerdatawindow->setAccountId(ui->accountsListWidget->currentItem()->data(1).toString());
 }

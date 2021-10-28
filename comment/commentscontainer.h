@@ -16,6 +16,12 @@ public:
     explicit CommentsContainer(QObject *parent = nullptr);
     void addComments(QVBoxLayout* , QJsonArray , QMainWindow* );
 
+signals:
+    void linkActivated(QString );
+
+private slots:
+    void on_linkActivated(QString );
+
 };
 
 #endif // COMMENTSCONTAINER_H
