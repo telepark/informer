@@ -5,13 +5,11 @@
 
 #include "alltaskslistwindow/alltaskslist.h"
 
-
 CommentsContainer::CommentsContainer(QObject *parent) : QObject(parent)
 {
     foreach (QWidget *w, QApplication::topLevelWidgets())
         if (AllTasksList* allTaskWin = qobject_cast<AllTasksList*>(w))
             m_allTaskWin = allTaskWin;
-
 }
 
 void CommentsContainer::addComments(QVBoxLayout* container_layout, QJsonArray dataArray, QMainWindow* parent_window)
@@ -53,7 +51,6 @@ void CommentsContainer::addComments(QVBoxLayout* container_layout, QJsonArray da
         QVBoxLayout* comment_layout = new QVBoxLayout(widget);
         QHBoxLayout* labels_layout = new QHBoxLayout(labelWidget);
 
-        qDebug() << "AccountObj.value(informer_name)" <<  AccountObj.value("informer_name").toString() << "\n";
         if (m_allTaskWin == parent_window) {
             QString InformerNameIdString = QString::number(AccountObj.value("informer_id").toInt());
             QString informerName = (AccountObj.value("informer_name").toString("").length() > 2) ? AccountObj.value("informer_name").toString("") : InformerNameIdString;
