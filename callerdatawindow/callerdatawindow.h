@@ -36,7 +36,9 @@ public:
     explicit CallerDataWindow(QWidget* parent = nullptr);
     ~CallerDataWindow();
 
-    void setAccountId(const QString& accountId);
+    void setAccountId(const QString&);
+    void setInformerId(const int);
+    void setInformerId(const QString);
     void retrieveConsumerInfoFinished();
     void handleConnectionError();
     void addCommentFinished();

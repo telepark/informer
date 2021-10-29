@@ -8,6 +8,7 @@
 #include <QJsonObject>
 
 #include "comment.h"
+#include "alltaskslistwindow/alltaskslist.h"
 
 class CommentsContainer : public QObject
 {
@@ -15,6 +16,8 @@ class CommentsContainer : public QObject
 public:
     explicit CommentsContainer(QObject *parent = nullptr);
     void addComments(QVBoxLayout* , QJsonArray , QMainWindow* );
+private:
+    AllTasksList* m_allTaskWin = nullptr;
 
 signals:
     void linkActivated(QString );

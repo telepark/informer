@@ -9,6 +9,9 @@
 static const char* const kAccountInfoQuery =
         "/accounts/%1/zzhds/hd_info?consumer_accountId=%2&md5=%3";
 
+static const char* const informerInfoQuery =
+        "/accounts/%1/zzhds/informer_info?informer_id=%2&md5=%3";
+
 static const char* const kPostCommentQuery =
         "/accounts/%1/zzhds/hd_comments";
 
@@ -58,6 +61,43 @@ void CallerDataWindow::setAccountId(const QString& accountId)
     QString url(m_settings->value("info_url", kInfoUrl).toString());
     url.append(kAccountInfoQuery);
     req.setUrl(QUrl(url.arg(KAZOOAUTH.accountId().toLatin1(), m_consumer_accountId, hash.data())));
+    qDebug() << "\n req.url(): \n" << req.url() << "\n";
+    QNetworkReply* reply = m_nam->get(req);
+    connect(reply, &QNetworkReply::finished,
+            this, &CallerDataWindow::retrieveConsumerInfoFinished);
+    connect(reply, &QNetworkReply::errorOccurred,
+            this, &CallerDataWindow::handleConnectionError);
+}
+
+void CallerDataWindow::setInformerId(const int informerId)
+{
+    setInformerId(QString::number(informerId));
+}
+
+void CallerDataWindow::setInformerId(QString informerId)
+{
+    if (m_settings) {
+        m_settings->deleteLater();
+    }
+
+    m_settings = new QSettings(dataDirPath() + "/settings.ini",
+                               QSettings::IniFormat,
+                               this);
+    QByteArray hashTemplate(informerId.toLatin1());
+    hashTemplate.append(":");
+    hashTemplate.append(m_settings->value("md5_hash", kMd5Hash).toByteArray());
+    QByteArray hash = QCryptographicHash::hash(hashTemplate, QCryptographicHash::Md5).toHex();
+    QNetworkRequest req;
+    req.setRawHeader("X-Auth-Token", KAZOOAUTH.authToken().toLatin1());
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    //SSL
+    QSslConfiguration config = req.sslConfiguration();
+    config.setPeerVerifyMode(QSslSocket::VerifyNone);
+    config.setProtocol(QSsl::AnyProtocol);
+    req.setSslConfiguration(config);
+    QString url(m_settings->value("info_url", kInfoUrl).toString());
+    url.append(informerInfoQuery);
+    req.setUrl(QUrl(url.arg(KAZOOAUTH.accountId().toLatin1(), informerId, hash.data())));
     qDebug() << "\n req.url(): \n" << req.url() << "\n";
     QNetworkReply* reply = m_nam->get(req);
     connect(reply, &QNetworkReply::finished,
