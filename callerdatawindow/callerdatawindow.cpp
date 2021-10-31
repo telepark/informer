@@ -201,6 +201,14 @@ void CallerDataWindow::retrieveConsumerInfoFinished()
     ui->companyname_label->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->companyname_label, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showCompanyNameMenu(QPoint)));
 
+    ui->informer_emails_label->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui->informer_emails_label->setCursor(Qt::PointingHandCursor);
+    connect(ui->informer_emails_label, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showInformerEmailsMenu(QPoint)));
+
+    ui->informer_phonenumbers_label->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui->informer_phonenumbers_label->setCursor(Qt::PointingHandCursor);
+    connect(ui->informer_phonenumbers_label, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showInformerPhoneNumbersMenu(QPoint)));
+
     this->setWindowTitle(account_name);
 }
 
@@ -277,6 +285,70 @@ void CallerDataWindow::onCompanyNameSlot(QAction* label_action)
         qDebug() << "\n lookupCompanyNameAction selected \n";
         lookup_n_set_CompanyName();
         return;
+    }
+}
+
+void CallerDataWindow::showInformerEmailsMenu(const QPoint &pos) {
+    QPoint globalPos;
+    if (sender()->inherits("QAbstractScrollArea"))
+        globalPos = dynamic_cast<QAbstractScrollArea*>(sender())->viewport()->mapToGlobal(pos);
+    else
+        globalPos = dynamic_cast<QWidget*>(sender())->mapToGlobal(pos);
+
+    if (!m_informer_emails_contextmenu) {
+        qDebug() << "\ninside if !menu\n";
+
+        m_informer_emails_contextmenu = new QMenu;
+        connect(m_informer_emails_contextmenu,
+                SIGNAL(triggered(QAction*)),
+                SLOT(onInformerEmailsSlot(QAction*))
+                );
+
+        QAction* addInformerEmailAction = new QAction( tr("Add email"), this );
+        addInformerEmailAction->setStatusTip( tr("Add email to informer DB") );
+        QJsonObject addInformerEmailActionJOBJ
+        {
+            {"action", "addInformerEmailAction"},
+        };
+        addInformerEmailAction->setData(addInformerEmailActionJOBJ);
+
+        m_informer_emails_contextmenu->addAction(addInformerEmailAction);
+
+        m_informer_emails_contextmenu->exec(globalPos);
+    } else {
+        m_informer_emails_contextmenu->popup(globalPos);
+    }
+}
+
+void CallerDataWindow::showInformerPhoneNumbersMenu(const QPoint &pos) {
+    QPoint globalPos;
+    if (sender()->inherits("QAbstractScrollArea"))
+        globalPos = dynamic_cast<QAbstractScrollArea*>(sender())->viewport()->mapToGlobal(pos);
+    else
+        globalPos = dynamic_cast<QWidget*>(sender())->mapToGlobal(pos);
+
+    if (!m_informer_phonenumberss_contextmenu) {
+        qDebug() << "\ninside if !menu\n";
+
+        m_informer_phonenumberss_contextmenu = new QMenu;
+        connect(m_informer_phonenumberss_contextmenu,
+                SIGNAL(triggered(QAction*)),
+                SLOT(onInformerEmailsSlot(QAction*))
+                );
+
+        QAction* addInformerPhoneNumberAction = new QAction( tr("Add phone number"), this );
+        addInformerPhoneNumberAction->setStatusTip( tr("Add phone number to informer DB") );
+        QJsonObject addInformerPhoneNumberActionJOBJ
+        {
+            {"action", "addInformerPhoneNumberAction"},
+        };
+        addInformerPhoneNumberAction->setData(addInformerPhoneNumberActionJOBJ);
+
+        m_informer_phonenumberss_contextmenu->addAction(addInformerPhoneNumberAction);
+
+        m_informer_phonenumberss_contextmenu->exec(globalPos);
+    } else {
+        m_informer_phonenumberss_contextmenu->popup(globalPos);
     }
 }
 

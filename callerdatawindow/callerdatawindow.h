@@ -58,6 +58,8 @@ private:
     QJsonValue m_commentsDataValue;
 
     QMenu* m_company_name_contextmenu = nullptr;
+    QMenu* m_informer_phonenumberss_contextmenu = nullptr;
+    QMenu* m_informer_emails_contextmenu = nullptr;
 
     void renameCompany(const QString& newName);
     void renameCompanyFinished();
@@ -72,6 +74,8 @@ private slots:
     void on_consumer_tabWidget_tabBarClicked(int);
     void showCompanyNameMenu(const QPoint &);
     void onCompanyNameSlot(QAction*);
+    void showInformerEmailsMenu(const QPoint &);
+    void showInformerPhoneNumbersMenu(const QPoint &);
 
 signals:
     void commentAdded(int);
