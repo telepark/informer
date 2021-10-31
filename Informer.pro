@@ -28,6 +28,7 @@ SOURCES += \
     accountlookupdialog/accountlookupdialog.cpp \
     alltaskslistwindow/alltaskslist.cpp \
     callerdatawindow/callerdatawindow.cpp \
+    callerdatawindow/conpamynamedialog.cpp \
     comment/comment.cpp \
     comment/commentscontainer.cpp \
     debugdialog/debugdialog.cpp \
@@ -43,6 +44,7 @@ HEADERS  += \
     accountlookupdialog/accountlookupdialog.h \
     alltaskslistwindow/alltaskslist.h \
     callerdatawindow/callerdatawindow.h \
+    callerdatawindow/conpamynamedialog.h \
     comment/comment.h \
     comment/commentscontainer.h \
     debugdialog/debugdialog.h \

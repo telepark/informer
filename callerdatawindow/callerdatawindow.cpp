@@ -1,16 +1,22 @@
 #include <QApplication>
+#include <QMessageBox>
+#include <QMetaType>
 
 #include "callerdatawindow.h"
 #include "ui_callerdatawindow.h"
 #include "comment/comment.h"
 #include "comment/commentscontainer.h"
 #include "alltaskslistwindow/alltaskslist.h"
+#include "conpamynamedialog.h"
 
 static const char* const kAccountInfoQuery =
         "/accounts/%1/zzhds/hd_info?consumer_accountId=%2&md5=%3";
 
 static const char* const informerInfoQuery =
         "/accounts/%1/zzhds/informer_info?informer_id=%2&md5=%3";
+
+static const char* const informerNameFill =
+        "/accounts/%1/zzhds/informer_info/informer_name_fill?informer_id=%2&md5=%3";
 
 static const char* const kPostCommentQuery =
         "/accounts/%1/zzhds/hd_comments";
@@ -120,29 +126,37 @@ void CallerDataWindow::retrieveConsumerInfoFinished()
     }
 
     QJsonObject respData = document.object().value("data").toObject();
+    QJsonObject account_info_jobj = respData.value("account_info_jobj").toObject();
+    QJsonObject informer_info_jobj = respData.value("informer_info_jobj").toObject();
+
+    qDebug() << "\n CallerDataWindow::retrieveConsumerInfoFinished respData: " << respData << "\n";
+    qDebug() << "\n CallerDataWindow::retrieveConsumerInfoFinished account_info_jobj: " << account_info_jobj << "\n";
+    qDebug() << "\n CallerDataWindow::retrieveConsumerInfoFinished informer_info_jobj: " << informer_info_jobj << "\n";
 
     auto russian_locale = QLocale("ru_RU");
-    double numeric_balance = respData.value("account_balance").toDouble();
+    double numeric_balance = account_info_jobj.value("account_balance").toDouble();
     QString account_balance = russian_locale.toString(numeric_balance, 'f', 2);
 
-    m_lbId = respData.value("lb_id").toInteger();
-    m_informerId = respData.value("informer_id").toInteger();
+    m_lbId = account_info_jobj.value("lb_id").toInteger();
+    m_informerId = account_info_jobj.value("informer_id").toInteger();
 
     if (!account_balance.isNull()) {
-        ui->optional_comment1_label->setText("Balance: " + account_balance);
+        ui->account_balance_label->setText("Balance: " + account_balance);
     } else {
-        ui->optional_comment1_label->hide();
+        ui->account_balance_label->hide();
     }
 
     if (numeric_balance < 0) {
-        ui->optional_comment1_label->setStyleSheet("QLabel { color : red; }");
+        ui->account_balance_label->setStyleSheet("QLabel { color : red; }");
     }
 
-    QJsonObject accountInfo = respData.value("account_info").toObject();
+    QJsonObject accountInfo = account_info_jobj.value("account_info").toObject();
 
     qDebug() << "\n AccountInfo: " << accountInfo << "\n";
 
+    QString informer_name = informer_info_jobj.value("informer_name").toString();
     QString account_name = accountInfo.value("name").toString();
+    QString company_name = (informer_name.isEmpty() || QString::compare(account_name, informer_name, Qt::CaseInsensitive) == 0) ? account_name : account_name + " (" + informer_name + ")";
 
     QJsonValue emailsVal =  accountInfo.value("emails");
     qDebug() << "\n emailsVal: " << emailsVal << "\n";
@@ -182,12 +196,88 @@ void CallerDataWindow::retrieveConsumerInfoFinished()
         ui->phone_numbers_label->setText("Phone numbers: " + phonesStr);
     }
 
-    ui->companyname_label->setText(account_name);
-    ui->latest_comment_label->setText("comment_label here 29");
-    ui->latest_message_label->setText("latest message date");
+    ui->companyname_label->setText(company_name);
+    ui->companyname_label->setCursor(Qt::PointingHandCursor);
+    ui->companyname_label->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->companyname_label, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showCompanyNameMenu(QPoint)));
 
     this->setWindowTitle(account_name);
-    connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(on_some_pushButton_clicked()));
+}
+
+void CallerDataWindow::showCompanyNameMenu(const QPoint &pos) {
+    QPoint globalPos;
+    if (sender()->inherits("QAbstractScrollArea"))
+        globalPos = dynamic_cast<QAbstractScrollArea*>(sender())->viewport()->mapToGlobal(pos);
+    else
+        globalPos = dynamic_cast<QWidget*>(sender())->mapToGlobal(pos);
+
+    if (!m_company_name_contextmenu) {
+        qDebug() << "\ninside if !menu\n";
+
+        m_company_name_contextmenu = new QMenu;
+        connect(m_company_name_contextmenu,
+                SIGNAL(triggered(QAction*)),
+                SLOT(onCompanyNameSlot(QAction*))
+                );
+
+        QAction* renameCompanyAction = new QAction( tr("Rename"), this );
+        renameCompanyAction->setStatusTip( tr("Change company name") );
+        QJsonObject renameCompanyActionJOBJ
+        {
+            {"action", "renameCompanyAction"},
+        };
+        renameCompanyAction->setData(renameCompanyActionJOBJ);
+
+        QAction* lookupCompanyNameAction = new QAction( tr("Company name lookup"), this );
+        lookupCompanyNameAction->setStatusTip( tr("Change company name") );
+        QJsonObject lookupCompanyNameActionJOBJ
+        {
+            {"action", "lookupCompanyNameAction"},
+        };
+        lookupCompanyNameAction->setData(lookupCompanyNameActionJOBJ);
+
+        m_company_name_contextmenu->addAction(renameCompanyAction);
+        m_company_name_contextmenu->addSeparator();
+        m_company_name_contextmenu->addAction(lookupCompanyNameAction);
+        m_company_name_contextmenu->exec(globalPos);
+    } else {
+        m_company_name_contextmenu->popup(globalPos);
+    }
+}
+
+void CallerDataWindow::onCompanyNameSlot(QAction* label_action)
+{
+    qDebug() << "\n CallerDataWindow::onCompanyNameSlot label_action: " << label_action << "\n";
+    qDebug() << "\n CallerDataWindow::onCompanyNameSlot label_action: " << label_action->data() << "\n";
+    QJsonObject myJObj = label_action->data().toJsonObject();
+    qDebug() << "\n CallerDataWindow::onCompanyNameSlot myJObj.value(action): " << myJObj.value("action") << "\n";
+    qDebug() << "\n CallerDataWindow::onCompanyNameSlot myJObj.value(action).toString(): " << myJObj.value("action").toString() << "\n";
+    QString action = myJObj.value("action").toString();
+
+    if (action.contains("renameCompanyAction"))
+    {
+        ConpamyNameDialog dlg( this );
+        //    connect( &dlg, SIGNAL( applied() ), SLOT( onModalApplied() ) );
+        switch( dlg.exec() ) {
+        case QDialog::Accepted:
+            qDebug() << "Accepted: "<< dlg.getInput() << "\n";
+            renameCompany(dlg.getInput());
+            //        m_edit->setText( dlg.getInput() );
+            break;
+        case QDialog::Rejected:
+            qDebug() << "Rejected";
+            break;
+        default:
+            qDebug() << "Unexpected";
+        }
+        return;
+    }
+    if (action.contains("lookupCompanyNameAction"))
+    {
+        qDebug() << "\n lookupCompanyNameAction selected \n";
+        lookup_n_set_CompanyName();
+        return;
+    }
 }
 
 void CallerDataWindow::handleConnectionError()
@@ -201,9 +291,9 @@ void CallerDataWindow::handleConnectionError()
 }
 
 
-void CallerDataWindow::on_some_pushButton_clicked()
+void CallerDataWindow::on_addCommentButton_clicked()
 {
-    qDebug() << "\n CallerDataWindow::on_some_pushButton_clicked: " << ui->textEdit->toPlainText() <<
+    qDebug() << "\n CallerDataWindow::on_addCommentButton_clicked: " << ui->textEdit->toPlainText() <<
                 "\n";
     QJsonObject jsonObject;
     QJsonObject jsonData;
@@ -321,4 +411,102 @@ void CallerDataWindow::retrieveCommentsListFinished()
         CommentsContainer* commentContainer = new CommentsContainer;
         commentContainer->addComments(ui->commentsLayout, dataArray, this);
     }
+}
+
+void CallerDataWindow::renameCompany(const QString& newName)
+{
+    qDebug() << "\n renameCompanyAction selected newName: " << newName << "\n";
+
+    QJsonObject jsonObject;
+    QJsonObject jsonData;
+    //    jsonData["credentials"] = hash.data();
+    jsonData["informer_name"] = newName;
+    jsonObject["data"] = jsonData;
+    QJsonDocument jsonDocument(jsonObject);
+    QByteArray json = jsonDocument.toJson();
+
+    QNetworkRequest req;
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    req.setRawHeader("X-Auth-Token", KAZOOAUTH.authToken().toLatin1());
+
+    /* Setup SSL */
+    QSslConfiguration config = req.sslConfiguration();
+    config.setPeerVerifyMode(QSslSocket::VerifyNone);
+    config.setProtocol(QSsl::AnyProtocol);
+    req.setSslConfiguration(config);
+
+    QString url(m_settings->value("info_url", kInfoUrl).toString());
+    url.append(informerInfoQuery);
+    req.setUrl(QUrl(url.arg(KAZOOAUTH.accountId().toLatin1(),QString::number(m_informerId))));
+    qDebug() << "\n req.url(): \n" << req.url() << "\n";
+
+    QNetworkReply* reply = m_nam->put(req, json);
+    connect(reply, &QNetworkReply::finished,
+            this, &CallerDataWindow::renameCompanyFinished);
+    connect(reply, &QNetworkReply::errorOccurred,
+            this, &CallerDataWindow::handleConnectionError);
+}
+
+void CallerDataWindow::renameCompanyFinished()
+{
+    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
+    QByteArray data = reply->readAll();
+    reply->deleteLater();
+
+    QJsonParseError error;
+    QJsonDocument document = QJsonDocument::fromJson(data, &error);
+
+    if (error.error != QJsonParseError::NoError) {
+        return;
+    }
+    this->setInformerId(m_informerId);
+}
+
+
+void CallerDataWindow::lookup_n_set_CompanyName()
+{
+
+    QJsonObject jsonObject;
+    QJsonObject jsonData;
+    //    jsonData["credentials"] = hash.data();
+    jsonData["informer_id"] = m_informerId;
+    jsonObject["data"] = jsonData;
+    QJsonDocument jsonDocument(jsonObject);
+    QByteArray json = jsonDocument.toJson();
+
+    QNetworkRequest req;
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    req.setRawHeader("X-Auth-Token", KAZOOAUTH.authToken().toLatin1());
+
+    /* Setup SSL */
+    QSslConfiguration config = req.sslConfiguration();
+    config.setPeerVerifyMode(QSslSocket::VerifyNone);
+    config.setProtocol(QSsl::AnyProtocol);
+    req.setSslConfiguration(config);
+
+    QString url(m_settings->value("info_url", kInfoUrl).toString());
+    url.append(informerNameFill);
+    req.setUrl(QUrl(url.arg(KAZOOAUTH.accountId().toLatin1(),QString::number(m_informerId))));
+    qDebug() << "\n req.url(): \n" << req.url() << "\n";
+
+    QNetworkReply* reply = m_nam->post(req, json);
+    connect(reply, &QNetworkReply::finished,
+            this, &CallerDataWindow::lookup_n_set_CompanyNameFinished);
+    connect(reply, &QNetworkReply::errorOccurred,
+            this, &CallerDataWindow::handleConnectionError);
+}
+
+void CallerDataWindow::lookup_n_set_CompanyNameFinished()
+{
+    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
+    QByteArray data = reply->readAll();
+    reply->deleteLater();
+
+    QJsonParseError error;
+    QJsonDocument document = QJsonDocument::fromJson(data, &error);
+
+    if (error.error != QJsonParseError::NoError) {
+        return;
+    }
+    this->setInformerId(m_informerId);
 }

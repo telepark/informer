@@ -18,6 +18,7 @@
 #include <QLocale>
 #include <QLabel>
 #include <QDateTime>
+#include <QMenu>
 
 #include "kazoo_auth/kazoo_auth.h"
 #include "defaults.h"
@@ -56,12 +57,21 @@ private:
     QNetworkAccessManager* m_nam = new QNetworkAccessManager(this);
     QJsonValue m_commentsDataValue;
 
+    QMenu* m_company_name_contextmenu = nullptr;
+
+    void renameCompany(const QString& newName);
+    void renameCompanyFinished();
+    void lookup_n_set_CompanyName();
+    void lookup_n_set_CompanyNameFinished();
+
 public slots:
-    void on_some_pushButton_clicked();
+    void on_addCommentButton_clicked();
     void onCommentUpdated(int);
 
 private slots:
     void on_consumer_tabWidget_tabBarClicked(int);
+    void showCompanyNameMenu(const QPoint &);
+    void onCompanyNameSlot(QAction*);
 
 signals:
     void commentAdded(int);

@@ -29,6 +29,9 @@
         <height>0</height>
        </size>
       </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
       <widget class="QWidget" name="tab_account_details">
        <attribute name="title">
         <string>Account details</string>
@@ -53,6 +56,13 @@
              </widget>
             </item>
             <item>
+             <widget class="QLabel" name="informer_phonenumbers_label">
+              <property name="text">
+               <string>Informer phone numbers:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QLabel" name="emails_label">
               <property name="text">
                <string>Emails:</string>
@@ -60,23 +70,16 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="latest_comment_label">
+             <widget class="QLabel" name="informer_emails_label">
               <property name="text">
-               <string>Latest comment:</string>
+               <string>Informer emails:</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="latest_message_label">
+             <widget class="QLabel" name="account_balance_label">
               <property name="text">
-               <string>Latest message:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="optional_comment1_label">
-              <property name="text">
-               <string>Optional comment placeholder</string>
+               <string>Account balance:</string>
               </property>
              </widget>
             </item>
@@ -93,7 +96,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="addCommentButton">
             <property name="minimumSize">
              <size>
               <width>83</width>
