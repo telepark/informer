@@ -27,8 +27,8 @@ DEFINES += APP_VERSION=\\\"$${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_PATCH}
 SOURCES += \
     accountlookupdialog/accountlookupdialog.cpp \
     alltaskslistwindow/alltaskslist.cpp \
+    callerdatawindow/addfielddialog.cpp \
     callerdatawindow/callerdatawindow.cpp \
-    callerdatawindow/conpamynamedialog.cpp \
     comment/comment.cpp \
     comment/commentscontainer.cpp \
     debugdialog/debugdialog.cpp \
@@ -43,8 +43,8 @@ SOURCES += \
 HEADERS  += \
     accountlookupdialog/accountlookupdialog.h \
     alltaskslistwindow/alltaskslist.h \
+    callerdatawindow/addfielddialog.h \
     callerdatawindow/callerdatawindow.h \
-    callerdatawindow/conpamynamedialog.h \
     comment/comment.h \
     comment/commentscontainer.h \
     debugdialog/debugdialog.h \

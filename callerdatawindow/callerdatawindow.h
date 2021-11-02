@@ -65,6 +65,8 @@ private:
     void renameCompanyFinished();
     void lookup_n_set_CompanyName();
     void lookup_n_set_CompanyNameFinished();
+    void addInformerEmail(const QString&);
+    void addInformerPhoneNumber(const QString&);
 
 public slots:
     void on_addCommentButton_clicked();
@@ -76,6 +78,8 @@ private slots:
     void onCompanyNameSlot(QAction*);
     void showInformerEmailsMenu(const QPoint &);
     void showInformerPhoneNumbersMenu(const QPoint &);
+    void onInformerEmailsSlot(QAction*);
+    void onInformerPhoneNumbersSlot(QAction*);
 
 signals:
     void commentAdded(int);

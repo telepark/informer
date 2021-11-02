@@ -7,7 +7,7 @@
 #include "comment/comment.h"
 #include "comment/commentscontainer.h"
 #include "alltaskslistwindow/alltaskslist.h"
-#include "conpamynamedialog.h"
+#include "addfielddialog.h"
 
 static const char* const kAccountInfoQuery =
         "/accounts/%1/zzhds/hd_info?consumer_accountId=%2&md5=%3";
@@ -255,16 +255,13 @@ void CallerDataWindow::showCompanyNameMenu(const QPoint &pos) {
 
 void CallerDataWindow::onCompanyNameSlot(QAction* label_action)
 {
-    qDebug() << "\n CallerDataWindow::onCompanyNameSlot label_action: " << label_action << "\n";
-    qDebug() << "\n CallerDataWindow::onCompanyNameSlot label_action: " << label_action->data() << "\n";
     QJsonObject myJObj = label_action->data().toJsonObject();
-    qDebug() << "\n CallerDataWindow::onCompanyNameSlot myJObj.value(action): " << myJObj.value("action") << "\n";
-    qDebug() << "\n CallerDataWindow::onCompanyNameSlot myJObj.value(action).toString(): " << myJObj.value("action").toString() << "\n";
     QString action = myJObj.value("action").toString();
 
     if (action.contains("renameCompanyAction"))
     {
-        ConpamyNameDialog dlg( this );
+        AddFieldDialog dlg( this );
+        dlg.setWindowTitle("Set company name");
         //    connect( &dlg, SIGNAL( applied() ), SLOT( onModalApplied() ) );
         switch( dlg.exec() ) {
         case QDialog::Accepted:
@@ -333,7 +330,7 @@ void CallerDataWindow::showInformerPhoneNumbersMenu(const QPoint &pos) {
         m_informer_phonenumberss_contextmenu = new QMenu;
         connect(m_informer_phonenumberss_contextmenu,
                 SIGNAL(triggered(QAction*)),
-                SLOT(onInformerEmailsSlot(QAction*))
+                SLOT(onInformerPhoneNumbersSlot(QAction*))
                 );
 
         QAction* addInformerPhoneNumberAction = new QAction( tr("Add phone number"), this );
@@ -581,4 +578,75 @@ void CallerDataWindow::lookup_n_set_CompanyNameFinished()
         return;
     }
     this->setInformerId(m_informerId);
+}
+
+void CallerDataWindow::onInformerEmailsSlot(QAction* emails_action)
+{
+    QJsonObject myJObj = emails_action->data().toJsonObject();
+    QString action = myJObj.value("action").toString();
+
+    if (action.contains("addInformerEmailAction"))
+    {
+        AddFieldDialog dlg( this );
+        dlg.setWindowTitle("Add email address22222");
+        switch( dlg.exec() ) {
+        case QDialog::Accepted:
+            qDebug() << "Accepted: "<< dlg.getInput() << "\n";
+            addInformerEmail(dlg.getInput());
+            break;
+        case QDialog::Rejected:
+            qDebug() << "Rejected";
+            break;
+        default:
+            qDebug() << "Unexpected";
+        }
+        return;
+    }
+    if (action.contains("deleteInformerEmailAction"))
+    {
+        qDebug() << "\n deleteInformerEmailAction selected \n";
+//        deleteInformerEmail();
+        return;
+    }
+}
+
+void CallerDataWindow::addInformerEmail(const QString& informer_email)
+{
+    qDebug() << "\n CallerDataWindow::addInformerEmail informer_email: " << informer_email << "\n";
+
+}
+
+void CallerDataWindow::onInformerPhoneNumbersSlot(QAction* phonenumbers_action)
+{
+    QJsonObject myJObj = phonenumbers_action->data().toJsonObject();
+    QString action = myJObj.value("action").toString();
+
+    if (action.contains("addInformerPhoneNumberAction"))
+    {
+        AddFieldDialog dlg( this );
+        switch( dlg.exec() ) {
+        case QDialog::Accepted:
+            qDebug() << "Accepted: "<< dlg.getInput() << "\n";
+            addInformerEmail(dlg.getInput());
+            break;
+        case QDialog::Rejected:
+            qDebug() << "Rejected";
+            break;
+        default:
+            qDebug() << "Unexpected";
+        }
+        return;
+    }
+    if (action.contains("deleteInformerEmailAction"))
+    {
+        qDebug() << "\n deleteInformerEmailAction selected \n";
+//        deleteInformerPhoneNumber();
+        return;
+    }
+}
+
+void CallerDataWindow::addInformerPhoneNumber(const QString& informer_phonenumber)
+{
+    qDebug() << "\n CallerDataWindow::addInformerPhoneNumber informer_phonenumber: " << informer_phonenumber << "\n";
+
 }

@@ -1,5 +1,6 @@
-#ifndef CONPAMYNAMEDIALOG_H
-#define CONPAMYNAMEDIALOG_H
+#ifndef ADDFIELDDIALOG_H
+#define ADDFIELDDIALOG_H
+
 #include <QObject>
 #include <QBoxLayout>
 
@@ -10,12 +11,12 @@
 #include <QPushButton>
 
 
-class ConpamyNameDialog : public QDialog {
+class AddFieldDialog : public QDialog {
     Q_OBJECT
 
 public:
-    ConpamyNameDialog( QWidget* parent = 0 );
-    ~ConpamyNameDialog();
+    AddFieldDialog( QWidget* parent = 0 );
+    ~AddFieldDialog();
 
     QString getInput() const;
 
@@ -26,10 +27,4 @@ private:
     QLineEdit* m_edit;
 };
 
-#endif // CONPAMYNAMEDIALOG_H
-
-
-
-
-
-
+#endif // ADDFIELDDIALOG_H
