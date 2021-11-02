@@ -158,9 +158,7 @@ void InformerDialog::openCallerDataWindow()
 {
     m_callerdatawindow = new CallerDataWindow();
     m_callerdatawindow->show();
-    m_callerdatawindow->setAccountId(m_callerAccountId);
-    //    m_callerdatawindow->show();
-    qDebug() << "\n Inside InformerDialog KAZOOAUTH.authToken(): " << KAZOOAUTH.authToken() << "\n";
+    m_callerdatawindow->setInformerId(m_informerId);
     this->hide();
 }
 
@@ -210,14 +208,17 @@ void InformerDialog::retrieveCallerInfoFinished()
     }
 
     QJsonObject respData = document.object().value("data").toObject();
-    QJsonObject accountInfo = respData.value("account_info").toObject();
-    QString kazooAccountId = respData.value("kazoo_account_id").toString();
+    QJsonObject account_info_jobj = respData.value("account_info_jobj").toObject();
+    QJsonObject informer_info_jobj = respData.value("informer_info_jobj").toObject();
+    QJsonObject accountInfo = account_info_jobj.value("account_info").toObject();
+    QString informer_name = informer_info_jobj.value("informer_name").toString();
+    QString account_name = accountInfo.value("name").toString();
+    QString company_name = (informer_name.isEmpty() || QString::compare(account_name, informer_name, Qt::CaseInsensitive) == 0) ? account_name : account_name + " (" + informer_name + ")";
+    m_informerId = account_info_jobj.value("informer_id").toInteger();
 
     qDebug() << "\n AccountInfo: " << accountInfo << "\n";
 
-    QString account_name = accountInfo.value("name").toString();
-    m_companyName = account_name;
-    m_callerAccountId = kazooAccountId;
+    m_companyName = company_name;
     ui->informationLabel->setText(informationLabelText());
 }
 

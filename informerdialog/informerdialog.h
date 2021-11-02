@@ -62,7 +62,7 @@ class InformerDialog : public QDialog {
     QString m_callerIdName = "";
     QString m_callerIdNumber = "";
     QString m_callerDialed = "";
-    QString m_callerAccountId = "";
+    int m_informerId;
 
     QJsonObject m_kazooDataJObj = {};
     QSettings* m_settings = nullptr;
