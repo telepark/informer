@@ -62,11 +62,10 @@ private:
     QMenu* m_informer_emails_contextmenu = nullptr;
 
     void renameCompany(const QString& newName);
-    void renameCompanyFinished();
     void lookup_n_set_CompanyName();
-    void lookup_n_set_CompanyNameFinished();
     void addInformerEmail(const QString&);
     void addInformerPhoneNumber(const QString&);
+    void updateFinished();
 
 public slots:
     void on_addCommentButton_clicked();

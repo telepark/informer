@@ -511,26 +511,10 @@ void CallerDataWindow::renameCompany(const QString& newName)
 
     QNetworkReply* reply = m_nam->put(req, json);
     connect(reply, &QNetworkReply::finished,
-            this, &CallerDataWindow::renameCompanyFinished);
+            this, &CallerDataWindow::updateFinished);
     connect(reply, &QNetworkReply::errorOccurred,
             this, &CallerDataWindow::handleConnectionError);
 }
-
-void CallerDataWindow::renameCompanyFinished()
-{
-    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
-    QByteArray data = reply->readAll();
-    reply->deleteLater();
-
-    QJsonParseError error;
-    QJsonDocument document = QJsonDocument::fromJson(data, &error);
-
-    if (error.error != QJsonParseError::NoError) {
-        return;
-    }
-    this->setInformerId(m_informerId);
-}
-
 
 void CallerDataWindow::lookup_n_set_CompanyName()
 {
@@ -560,24 +544,9 @@ void CallerDataWindow::lookup_n_set_CompanyName()
 
     QNetworkReply* reply = m_nam->post(req, json);
     connect(reply, &QNetworkReply::finished,
-            this, &CallerDataWindow::lookup_n_set_CompanyNameFinished);
+            this, &CallerDataWindow::updateFinished);
     connect(reply, &QNetworkReply::errorOccurred,
             this, &CallerDataWindow::handleConnectionError);
-}
-
-void CallerDataWindow::lookup_n_set_CompanyNameFinished()
-{
-    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
-    QByteArray data = reply->readAll();
-    reply->deleteLater();
-
-    QJsonParseError error;
-    QJsonDocument document = QJsonDocument::fromJson(data, &error);
-
-    if (error.error != QJsonParseError::NoError) {
-        return;
-    }
-    this->setInformerId(m_informerId);
 }
 
 void CallerDataWindow::onInformerEmailsSlot(QAction* emails_action)
@@ -588,7 +557,7 @@ void CallerDataWindow::onInformerEmailsSlot(QAction* emails_action)
     if (action.contains("addInformerEmailAction"))
     {
         AddFieldDialog dlg( this );
-        dlg.setWindowTitle("Add email address22222");
+        dlg.setWindowTitle("Add email address");
         switch( dlg.exec() ) {
         case QDialog::Accepted:
             qDebug() << "Accepted: "<< dlg.getInput() << "\n";
@@ -614,7 +583,51 @@ void CallerDataWindow::addInformerEmail(const QString& informer_email)
 {
     qDebug() << "\n CallerDataWindow::addInformerEmail informer_email: " << informer_email << "\n";
 
+    QJsonObject jsonObject;
+    QJsonObject jsonData;
+    //    jsonData["credentials"] = hash.data();
+    jsonData["informer_email"] = informer_email;
+    jsonObject["data"] = jsonData;
+    QJsonDocument jsonDocument(jsonObject);
+    QByteArray json = jsonDocument.toJson();
+
+    QNetworkRequest req;
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    req.setRawHeader("X-Auth-Token", KAZOOAUTH.authToken().toLatin1());
+
+    /* Setup SSL */
+    QSslConfiguration config = req.sslConfiguration();
+    config.setPeerVerifyMode(QSslSocket::VerifyNone);
+    config.setProtocol(QSsl::AnyProtocol);
+    req.setSslConfiguration(config);
+
+    QString url(m_settings->value("info_url", kInfoUrl).toString());
+    url.append(informerInfoQuery);
+    req.setUrl(QUrl(url.arg(KAZOOAUTH.accountId().toLatin1(),QString::number(m_informerId))));
+    qDebug() << "\n req.url(): \n" << req.url() << "\n";
+
+    QNetworkReply* reply = m_nam->put(req, json);
+    connect(reply, &QNetworkReply::finished,
+            this, &CallerDataWindow::updateFinished);
+    connect(reply, &QNetworkReply::errorOccurred,
+            this, &CallerDataWindow::handleConnectionError);
 }
+
+void CallerDataWindow::updateFinished()
+{
+    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
+    QByteArray data = reply->readAll();
+    reply->deleteLater();
+
+    QJsonParseError error;
+    QJsonDocument document = QJsonDocument::fromJson(data, &error);
+
+    if (error.error != QJsonParseError::NoError) {
+        return;
+    }
+    this->setInformerId(m_informerId);
+}
+
 
 void CallerDataWindow::onInformerPhoneNumbersSlot(QAction* phonenumbers_action)
 {
@@ -648,5 +661,33 @@ void CallerDataWindow::onInformerPhoneNumbersSlot(QAction* phonenumbers_action)
 void CallerDataWindow::addInformerPhoneNumber(const QString& informer_phonenumber)
 {
     qDebug() << "\n CallerDataWindow::addInformerPhoneNumber informer_phonenumber: " << informer_phonenumber << "\n";
+    QJsonObject jsonObject;
+    QJsonObject jsonData;
+    //    jsonData["credentials"] = hash.data();
+    jsonData["informer_phonenumber"] = informer_phonenumber;
+    jsonObject["data"] = jsonData;
+    QJsonDocument jsonDocument(jsonObject);
+    QByteArray json = jsonDocument.toJson();
+
+    QNetworkRequest req;
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    req.setRawHeader("X-Auth-Token", KAZOOAUTH.authToken().toLatin1());
+
+    /* Setup SSL */
+    QSslConfiguration config = req.sslConfiguration();
+    config.setPeerVerifyMode(QSslSocket::VerifyNone);
+    config.setProtocol(QSsl::AnyProtocol);
+    req.setSslConfiguration(config);
+
+    QString url(m_settings->value("info_url", kInfoUrl).toString());
+    url.append(informerInfoQuery);
+    req.setUrl(QUrl(url.arg(KAZOOAUTH.accountId().toLatin1(),QString::number(m_informerId))));
+    qDebug() << "\n req.url(): \n" << req.url() << "\n";
+
+    QNetworkReply* reply = m_nam->put(req, json);
+    connect(reply, &QNetworkReply::finished,
+            this, &CallerDataWindow::updateFinished);
+    connect(reply, &QNetworkReply::errorOccurred,
+            this, &CallerDataWindow::handleConnectionError);
 
 }
