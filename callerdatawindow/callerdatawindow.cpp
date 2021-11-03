@@ -177,6 +177,25 @@ void CallerDataWindow::retrieveConsumerInfoFinished()
         ui->emails_label->setText("Emails: " + emailsStr);
     }
 
+    QJsonValue emailsInformer =  informer_info_jobj.value("emails");
+    qDebug() << "\n emailsVal: " << emailsInformer << "\n";
+    QString emailsInformerStr = "";
+
+    if (emailsInformer.isArray()) {
+        QJsonArray emailsInformerArray = emailsInformer.toArray();
+        qDebug() << "\n emailsArray: " << emailsInformerArray << "\n";
+
+        for (int i = 0; i < emailsInformerArray.count(); i++) {
+            if (i > 0) {
+                emailsInformerStr += ", ";
+            }
+
+            emailsInformerStr += emailsInformerArray.at(i).toString();
+        }
+
+        ui->informer_emails_label ->setText("Informer emails: " + emailsInformerStr);
+    }
+
     QJsonValue phonesVal =  accountInfo.value("phones");
     qDebug() << "\n phonesVal: " << phonesVal << "\n";
     QString phonesStr = "";
@@ -194,6 +213,25 @@ void CallerDataWindow::retrieveConsumerInfoFinished()
         }
 
         ui->phone_numbers_label->setText("Phone numbers: " + phonesStr);
+    }
+
+    QJsonValue phonenumbersInformer =  informer_info_jobj.value("phone_numbers");
+    qDebug() << "\n phonenumbersVal: " << phonenumbersInformer << "\n";
+    QString phonenumbersInformerStr = "";
+
+    if (phonenumbersInformer.isArray()) {
+        QJsonArray phonenumbersInformerArray = phonenumbersInformer.toArray();
+        qDebug() << "\n phonenumbersArray: " << phonenumbersInformerArray << "\n";
+
+        for (int i = 0; i < phonenumbersInformerArray.count(); i++) {
+            if (i > 0) {
+                phonenumbersInformerStr += ", ";
+            }
+
+            phonenumbersInformerStr += phonenumbersInformerArray.at(i).toString();
+        }
+
+        ui->informer_phonenumbers_label ->setText("Informer phone numbers: " + phonenumbersInformerStr);
     }
 
     ui->companyname_label->setText(company_name);
@@ -640,7 +678,7 @@ void CallerDataWindow::onInformerPhoneNumbersSlot(QAction* phonenumbers_action)
         switch( dlg.exec() ) {
         case QDialog::Accepted:
             qDebug() << "Accepted: "<< dlg.getInput() << "\n";
-            addInformerEmail(dlg.getInput());
+            addInformerPhoneNumber(dlg.getInput());
             break;
         case QDialog::Rejected:
             qDebug() << "Rejected";
