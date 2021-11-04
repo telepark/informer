@@ -164,27 +164,32 @@ void CallerDataWindow::retrieveConsumerInfoFinished()
     this->setWindowTitle(company_name);
 
     QLabel* companyNameLabel = new QLabel;
-
     companyNameLabel->setText(company_name);
     companyNameLabel->setCursor(Qt::PointingHandCursor);
     companyNameLabel->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(companyNameLabel, SIGNAL(customContextMenuRequested(QPoint)), this,
             SLOT(showCompanyNameMenu(QPoint)));
+    QWidget* companyNameWidget = new QWidget();
+    QHBoxLayout* companyNameHLayout = new QHBoxLayout(companyNameWidget);
 
-    ui->InformerInfoVerticalLayout->addWidget(companyNameLabel);
+    companyNameHLayout->addWidget(companyNameLabel);
+    ui->InformerInfoVerticalLayout->addWidget(companyNameWidget);
 
     double numeric_balance = account_info_jobj.value("account_balance").toDouble();
     QString account_balance = russian_locale.toString(numeric_balance, 'f', 2);
 
     if (!account_balance.isNull()) {
-        QLabel* accountBalance = new QLabel;
+        QLabel* accountBalanceLabel = new QLabel;
 
         if (numeric_balance < 0) {
-            accountBalance->setStyleSheet("QLabel { color : red; }");
+            accountBalanceLabel->setStyleSheet("QLabel { color : red; }");
         }
 
-        accountBalance->setText("Balance: " + account_balance);
-        ui->InformerInfoVerticalLayout->addWidget(accountBalance);
+        accountBalanceLabel->setText("Balance: " + account_balance);
+        QWidget* balanceWidget = new QWidget();
+        QHBoxLayout* balanceHLayout = new QHBoxLayout(balanceWidget);
+        balanceHLayout->addWidget(accountBalanceLabel);
+        ui->InformerInfoVerticalLayout->addWidget(balanceWidget);
     }
 
     QJsonValue emailsVal =  accountInfo.value("emails");
@@ -268,7 +273,7 @@ void CallerDataWindow::retrieveConsumerInfoFinished()
 
         QWidget* InformerPhonesWidget = new QWidget();
         QHBoxLayout* PhonesHLayout = new QHBoxLayout(InformerPhonesWidget);
-        QLabel* InformerPhonesLabel = new QLabel("Phone numbers: ", InformerPhonesWidget);
+        QLabel* InformerPhonesLabel = new QLabel("Informer phone numbers: ", InformerPhonesWidget);
 
         InformerPhonesLabel->setContextMenuPolicy(Qt::CustomContextMenu);
         InformerPhonesLabel->setCursor(Qt::PointingHandCursor);
