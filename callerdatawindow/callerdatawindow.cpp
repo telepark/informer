@@ -242,9 +242,12 @@ void CallerDataWindow::retrieveConsumerInfoFinished()
         InformerEmailsHLayout->addWidget(InformerEmailsLabel);
 
         for (int i = 0; i < emailsInformerArray.count(); i++) {
-            InformerEmailsHLayout->addWidget(new QLabel(emailsInformerArray.at(i).toString(),
-                                                        InformerEmailsWidget));
-
+            QLabel* IEmlLabel = new QLabel(emailsInformerArray.at(i).toString(), InformerEmailsWidget);
+            IEmlLabel->setContextMenuPolicy(Qt::CustomContextMenu);
+            IEmlLabel->setCursor(Qt::PointingHandCursor);
+            connect(IEmlLabel, SIGNAL(customContextMenuRequested(QPoint)), this,
+                    SLOT(showInformerEmailMenu(QPoint)));
+            InformerEmailsHLayout->addWidget(IEmlLabel);
         }
 
         InformerEmailsHLayout->addStretch(1);
@@ -299,9 +302,12 @@ void CallerDataWindow::retrieveConsumerInfoFinished()
         PhonesHLayout->addWidget(InformerPhonesLabel);
 
         for (int i = 0; i < phonenumbersInformerArray.count(); i++) {
-            PhonesHLayout->addWidget(new QLabel(phonenumbersInformerArray.at(i).toString(),
-                                                InformerPhonesWidget));
-
+            QLabel* IPhoneLabel = new QLabel(phonenumbersInformerArray.at(i).toString(), InformerPhonesWidget);
+            IPhoneLabel->setContextMenuPolicy(Qt::CustomContextMenu);
+            IPhoneLabel->setCursor(Qt::PointingHandCursor);
+            connect(IPhoneLabel, SIGNAL(customContextMenuRequested(QPoint)), this,
+                    SLOT(showInformerPhoneNumberMenu(QPoint)));
+            PhonesHLayout->addWidget(IPhoneLabel);
         }
 
         PhonesHLayout->addStretch(1);
@@ -431,11 +437,11 @@ void CallerDataWindow::showInformerPhoneNumbersMenu(const QPoint& pos)
         globalPos = dynamic_cast<QWidget*>(sender())->mapToGlobal(pos);
     }
 
-    if (!m_informer_phonenumberss_contextmenu) {
+    if (!m_informer_phonenumbers_contextmenu) {
         qDebug() << "\ninside if !menu\n";
 
-        m_informer_phonenumberss_contextmenu = new QMenu;
-        connect(m_informer_phonenumberss_contextmenu,
+        m_informer_phonenumbers_contextmenu = new QMenu;
+        connect(m_informer_phonenumbers_contextmenu,
                 SIGNAL(triggered(QAction*)),
                 SLOT(onInformerPhoneNumbersSlot(QAction*))
                );
@@ -447,11 +453,11 @@ void CallerDataWindow::showInformerPhoneNumbersMenu(const QPoint& pos)
         };
         addInformerPhoneNumberAction->setData(addInformerPhoneNumberActionJOBJ);
 
-        m_informer_phonenumberss_contextmenu->addAction(addInformerPhoneNumberAction);
+        m_informer_phonenumbers_contextmenu->addAction(addInformerPhoneNumberAction);
 
-        m_informer_phonenumberss_contextmenu->exec(globalPos);
+        m_informer_phonenumbers_contextmenu->exec(globalPos);
     } else {
-        m_informer_phonenumberss_contextmenu->popup(globalPos);
+        m_informer_phonenumbers_contextmenu->popup(globalPos);
     }
 }
 
@@ -664,7 +670,11 @@ void CallerDataWindow::lookup_n_set_CompanyName()
 void CallerDataWindow::onInformerEmailsSlot(QAction* emails_action)
 {
     QJsonObject myJObj = emails_action->data().toJsonObject();
+    qDebug() << "\n CallerDataWindow::onInformerEmailsSlot emails_action: " << emails_action << "\n";
+    qDebug() << "\n CallerDataWindow::onInformerEmailsSlot myJObj: " << myJObj << "\n";
+
     QString action = myJObj.value("action").toString();
+
 
     if (action.contains("addInformerEmailAction")) {
         AddFieldDialog dlg( this );
@@ -688,11 +698,52 @@ void CallerDataWindow::onInformerEmailsSlot(QAction* emails_action)
     }
 
     if (action.contains("deleteInformerEmailAction")) {
-        qDebug() << "\n deleteInformerEmailAction selected \n";
-        //        deleteInformerEmail();
+        qDebug() << "\n deleteInformerEmailAction myJObj: " << myJObj << "\n";
+        QString email_to_delete = myJObj.value("email_to_delete").toString();
+        qDebug() << "\n deleteInformerEmailAction selected: " << email_to_delete << "\n";
+        deleteInformerEmail(email_to_delete);
         return;
     }
+
+    qDebug() << "\n Action" << action;
 }
+
+
+void CallerDataWindow::deleteInformerEmail(const QString& informer_email)
+{
+    qDebug() << "\n CallerDataWindow::addInformerEmail informer_email: " << informer_email << "\n";
+
+    QJsonObject jsonObject;
+    QJsonObject jsonData;
+    //    jsonData["credentials"] = hash.data();
+    jsonData["informer_email"] = informer_email;
+    jsonObject["data"] = jsonData;
+    QJsonDocument jsonDocument(jsonObject);
+    QByteArray json = jsonDocument.toJson();
+
+    QNetworkRequest req;
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    req.setRawHeader("X-Auth-Token", KAZOOAUTH.authToken().toLatin1());
+
+    /* Setup SSL */
+    QSslConfiguration config = req.sslConfiguration();
+    config.setPeerVerifyMode(QSslSocket::VerifyNone);
+    config.setProtocol(QSsl::AnyProtocol);
+    req.setSslConfiguration(config);
+
+    QString url(m_settings->value("info_url", kInfoUrl).toString());
+    url.append(informerInfoQuery);
+    req.setUrl(QUrl(url.arg(KAZOOAUTH.accountId().toLatin1(), QString::number(m_informerId))));
+    qDebug() << "\n req.url(): \n" << req.url() << "\n";
+
+    QNetworkReply* reply = m_nam->sendCustomRequest(req, "DELETE", json);
+    connect(reply, &QNetworkReply::finished,
+            this, &CallerDataWindow::updateFinished);
+    connect(reply, &QNetworkReply::errorOccurred,
+            this, &CallerDataWindow::handleConnectionError);
+}
+
+
 
 void CallerDataWindow::addInformerEmail(const QString& informer_email)
 {
@@ -770,9 +821,22 @@ void CallerDataWindow::onInformerPhoneNumbersSlot(QAction* phonenumbers_action)
         return;
     }
 
-    if (action.contains("deleteInformerEmailAction")) {
-        qDebug() << "\n deleteInformerEmailAction selected \n";
-        //        deleteInformerPhoneNumber();
+    if (action.contains("deleteInformerPhoneNumberAction")) {
+        qDebug() << "\n deleteInformerPhoneNumberAction myJObj: " << myJObj << "\n";
+        QString phonenumber_to_delete = myJObj.value("phonenumber_to_delete").toString();
+        qDebug() << "\n deleteInformerPhoneNumberAction selected: " << phonenumber_to_delete << "\n";
+        //        deleteInformerPhoneNumber(phonenumber_to_delete);
+
+        QJsonObject jsonObject;
+        QJsonObject jsonData;
+        //    jsonData["credentials"] = hash.data();
+        jsonData["informer_phonenumber"] = phonenumber_to_delete;
+        jsonObject["data"] = jsonData;
+        QJsonDocument jsonDocument(jsonObject);
+        QByteArray json = jsonDocument.toJson();
+
+        informerInfoReq("DELETE", json);
+
         return;
     }
 }
@@ -810,4 +874,123 @@ void CallerDataWindow::addInformerPhoneNumber(const QString& informer_phonenumbe
     connect(reply, &QNetworkReply::errorOccurred,
             this, &CallerDataWindow::handleConnectionError);
 
+}
+
+void CallerDataWindow::showInformerEmailMenu(const QPoint& pos)
+{
+
+    QLabel* eLabel = qobject_cast<QLabel*>(sender());
+
+    if ( eLabel != NULL ) {
+        qDebug() << "\n CallerDataWindow::showInformerEmailMenu sender() " << eLabel->text() << "\n";
+    }
+
+    qDebug() << "\n CallerDataWindow::showInformerEmailMenu \n";
+    QJsonObject deletenformerEmailActionJOBJ {
+        {"action", "deleteInformerEmailAction"},
+        {"email_to_delete", eLabel->text()},
+    };
+
+
+    QPoint globalPos;
+
+    if (sender()->inherits("QAbstractScrollArea")) {
+        globalPos = dynamic_cast<QAbstractScrollArea*>(sender())->viewport()->mapToGlobal(pos);
+    } else {
+        globalPos = dynamic_cast<QWidget*>(sender())->mapToGlobal(pos);
+    }
+
+    if (!m_informer_email_contextmenu) {
+        qDebug() << "\ninside if !menu\n";
+
+        m_informer_email_contextmenu = new QMenu;
+        connect(m_informer_email_contextmenu,
+                SIGNAL(triggered(QAction*)),
+                SLOT(onInformerEmailsSlot(QAction*))
+               );
+
+        deleteInformerEmailAction = new QAction( tr("Delete email"), this );
+        deleteInformerEmailAction->setStatusTip( tr("Delete email from informer DB") );
+        deleteInformerEmailAction->setData(deletenformerEmailActionJOBJ);
+
+        m_informer_email_contextmenu->addAction(deleteInformerEmailAction);
+
+        m_informer_email_contextmenu->exec(globalPos);
+    } else {
+        deleteInformerEmailAction->setData(deletenformerEmailActionJOBJ);
+
+        m_informer_email_contextmenu->popup(globalPos);
+    }
+}
+
+void CallerDataWindow::showInformerPhoneNumberMenu(const QPoint& pos)
+{
+
+    QLabel* eLabel = qobject_cast<QLabel*>(sender());
+
+    if ( eLabel != NULL ) {
+        qDebug() << "\n CallerDataWindow::showInformerPhoneNumberMenu sender() " << eLabel->text() << "\n";
+    }
+
+    qDebug() << "\n CallerDataWindow::showInformerPhoneNumberMenu \n";
+    QJsonObject deletenformerPhoneNemberActionJOBJ {
+        {"action", "deleteInformerPhoneNumberAction"},
+        {"phonenumber_to_delete", eLabel->text()},
+    };
+
+
+    QPoint globalPos;
+
+    if (sender()->inherits("QAbstractScrollArea")) {
+        globalPos = dynamic_cast<QAbstractScrollArea*>(sender())->viewport()->mapToGlobal(pos);
+    } else {
+        globalPos = dynamic_cast<QWidget*>(sender())->mapToGlobal(pos);
+    }
+
+    if (!m_informer_phonenumber_contextmenu) {
+        qDebug() << "\ninside if !menu\n";
+
+        m_informer_phonenumber_contextmenu = new QMenu;
+        connect(m_informer_phonenumber_contextmenu,
+                SIGNAL(triggered(QAction*)),
+                SLOT(onInformerPhoneNumbersSlot(QAction*))
+               );
+
+        deleteInformerPhoneNumberAction = new QAction( tr("Delete phone number"), this );
+        deleteInformerPhoneNumberAction->setStatusTip( tr("Delete phone number from informer DB") );
+        deleteInformerPhoneNumberAction->setData(deletenformerPhoneNemberActionJOBJ);
+
+        m_informer_phonenumber_contextmenu->addAction(deleteInformerPhoneNumberAction);
+
+        m_informer_phonenumber_contextmenu->exec(globalPos);
+    } else {
+        deleteInformerPhoneNumberAction->setData(deletenformerPhoneNemberActionJOBJ);
+
+        m_informer_phonenumber_contextmenu->popup(globalPos);
+    }
+}
+
+
+void CallerDataWindow::informerInfoReq(const QByteArray verb, const QByteArray json)
+{
+    QNetworkRequest req;
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    req.setRawHeader("X-Auth-Token", KAZOOAUTH.authToken().toLatin1());
+
+    /* Setup SSL */
+    QSslConfiguration config = req.sslConfiguration();
+    config.setPeerVerifyMode(QSslSocket::VerifyNone);
+    config.setProtocol(QSsl::AnyProtocol);
+    req.setSslConfiguration(config);
+
+    QString url(m_settings->value("info_url", kInfoUrl).toString());
+    url.append(informerInfoQuery);
+    req.setUrl(QUrl(url.arg(KAZOOAUTH.accountId().toLatin1(), QString::number(m_informerId))));
+    qDebug() << "\n req.url(): \n" << req.url() << "\n";
+
+    QNetworkReply* reply = m_nam->sendCustomRequest(req, verb, json);
+    connect(reply, &QNetworkReply::finished,
+            this, &CallerDataWindow::updateFinished);
+    connect(reply, &QNetworkReply::errorOccurred,
+            this, &CallerDataWindow::handleConnectionError);
 }

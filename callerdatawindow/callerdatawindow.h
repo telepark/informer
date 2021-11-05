@@ -33,7 +33,7 @@ class QMouseEvent;
 class CallerDataWindow : public QMainWindow {
     Q_OBJECT
 
-public:
+  public:
     explicit CallerDataWindow(QWidget* parent = nullptr);
     ~CallerDataWindow();
 
@@ -46,7 +46,7 @@ public:
     void retrieveCommentsList();
     void retrieveCommentsListFinished();
 
-private:
+  private:
     Ui::CallerDataWindow* ui;
     QString m_consumer_accountId = "";
     int m_lbId;
@@ -58,29 +58,37 @@ private:
     QJsonValue m_commentsDataValue;
 
     QMenu* m_company_name_contextmenu = nullptr;
-    QMenu* m_informer_phonenumberss_contextmenu = nullptr;
+    QMenu* m_informer_phonenumbers_contextmenu = nullptr;
+    QMenu* m_informer_phonenumber_contextmenu = nullptr;
     QMenu* m_informer_emails_contextmenu = nullptr;
+    QMenu* m_informer_email_contextmenu = nullptr;
+    QAction* deleteInformerEmailAction = nullptr;
+    QAction* deleteInformerPhoneNumberAction = nullptr;
 
     void renameCompany(const QString& newName);
     void lookup_n_set_CompanyName();
     void addInformerEmail(const QString&);
+    void deleteInformerEmail(const QString&);
+    void informerInfoReq(const QByteArray, const QByteArray);
     void addInformerPhoneNumber(const QString&);
     void updateFinished();
 
-public slots:
+  public slots:
     void on_addCommentButton_clicked();
     void onCommentUpdated(int);
 
-private slots:
+  private slots:
     void on_consumer_tabWidget_tabBarClicked(int);
-    void showCompanyNameMenu(const QPoint &);
+    void showCompanyNameMenu(const QPoint&);
     void onCompanyNameSlot(QAction*);
-    void showInformerEmailsMenu(const QPoint &);
-    void showInformerPhoneNumbersMenu(const QPoint &);
+    void showInformerEmailsMenu(const QPoint&);
+    void showInformerEmailMenu(const QPoint&);
+    void showInformerPhoneNumbersMenu(const QPoint&);
+    void showInformerPhoneNumberMenu(const QPoint&);
     void onInformerEmailsSlot(QAction*);
     void onInformerPhoneNumbersSlot(QAction*);
 
-signals:
+  signals:
     void commentAdded(int);
 
 };
