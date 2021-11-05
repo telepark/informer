@@ -40,7 +40,11 @@
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
-           <layout class="QVBoxLayout" name="InformerInfoVerticalLayout"/>
+           <layout class="QVBoxLayout" name="InformerInfoVerticalLayout">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+           </layout>
           </item>
           <item>
            <widget class="QTextEdit" name="textEdit">

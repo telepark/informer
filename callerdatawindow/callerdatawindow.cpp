@@ -171,6 +171,8 @@ void CallerDataWindow::retrieveConsumerInfoFinished()
             SLOT(showCompanyNameMenu(QPoint)));
     QWidget* companyNameWidget = new QWidget();
     QHBoxLayout* companyNameHLayout = new QHBoxLayout(companyNameWidget);
+    companyNameHLayout->setSpacing(0);
+    companyNameHLayout->setContentsMargins(0, 0, 0, 7);
 
     companyNameHLayout->addWidget(companyNameLabel);
     ui->InformerInfoVerticalLayout->addWidget(companyNameWidget);
@@ -188,6 +190,8 @@ void CallerDataWindow::retrieveConsumerInfoFinished()
         accountBalanceLabel->setText("Balance: " + account_balance);
         QWidget* balanceWidget = new QWidget();
         QHBoxLayout* balanceHLayout = new QHBoxLayout(balanceWidget);
+        //        balanceHLayout->setSpacing(0);
+        balanceHLayout->setContentsMargins(0, 0, 0, 7);
         balanceHLayout->addWidget(accountBalanceLabel);
         ui->InformerInfoVerticalLayout->addWidget(balanceWidget);
     }
@@ -201,6 +205,9 @@ void CallerDataWindow::retrieveConsumerInfoFinished()
 
         QWidget* EmailsWidget = new QWidget();
         QHBoxLayout* InformerEmailsHLayout = new QHBoxLayout(EmailsWidget);
+        //        InformerEmailsHLayout->setSpacing(0);
+        InformerEmailsHLayout->setContentsMargins(0, 0, 0, 7);
+
         QLabel* InformerEmailsLabel = new QLabel("Emails: ", EmailsWidget);
         InformerEmailsHLayout->addWidget(InformerEmailsLabel);
 
@@ -222,6 +229,9 @@ void CallerDataWindow::retrieveConsumerInfoFinished()
 
         QWidget* InformerEmailsWidget = new QWidget();
         QHBoxLayout* InformerEmailsHLayout = new QHBoxLayout(InformerEmailsWidget);
+        //        InformerEmailsHLayout->setSpacing(0);
+        InformerEmailsHLayout->setContentsMargins(0, 0, 0, 7);
+
         QLabel* InformerEmailsLabel = new QLabel("Informer emails: ", InformerEmailsWidget);
 
         InformerEmailsLabel->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -251,6 +261,9 @@ void CallerDataWindow::retrieveConsumerInfoFinished()
 
         QWidget* PhonesWidget = new QWidget();
         QHBoxLayout* PhonesHLayout = new QHBoxLayout(PhonesWidget);
+        //        PhonesHLayout->setSpacing(0);
+        PhonesHLayout->setContentsMargins(0, 0, 0, 7);
+
         QLabel* PhonesLabel = new QLabel("Phone numbers: ", PhonesWidget);
         PhonesHLayout->addWidget(PhonesLabel);
 
@@ -273,6 +286,9 @@ void CallerDataWindow::retrieveConsumerInfoFinished()
 
         QWidget* InformerPhonesWidget = new QWidget();
         QHBoxLayout* PhonesHLayout = new QHBoxLayout(InformerPhonesWidget);
+        //        PhonesHLayout->setSpacing(0);
+        PhonesHLayout->setContentsMargins(0, 0, 0, 7);
+
         QLabel* InformerPhonesLabel = new QLabel("Informer phone numbers: ", InformerPhonesWidget);
 
         InformerPhonesLabel->setContextMenuPolicy(Qt::CustomContextMenu);
