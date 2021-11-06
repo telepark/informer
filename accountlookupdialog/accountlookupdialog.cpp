@@ -8,7 +8,7 @@
 #include <QMessageBox>
 
 static const char* const kAccountsQuery =
-        "/accounts/%1/zzhds/hd_accounts?md5=%2";
+    "/accounts/%1/zzhds/informer_accounts?md5=%2";
 
 
 AccountLookupDialog::AccountLookupDialog(QWidget* parent) :
@@ -82,6 +82,7 @@ void AccountLookupDialog::retrieveAccountsListFinished()
             ui->accountsListWidget->addItem(newItem);
         }
     }
+
     ui->total_digits_label->setText(QString("%1").arg(ui->accountsListWidget->count()));
 }
 
@@ -91,13 +92,14 @@ void AccountLookupDialog::handleConnectionError()
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
     reply->deleteLater();
     qDebug() << "\n AccountLookupDialog::handleConnectionError Reply->errorString() : " <<
-                reply->errorString() << "\n";
+             reply->errorString() << "\n";
     qDebug() << "\n AccountLookupDialog::handleConnectionError Reply->error() : " <<
-                reply->error() << "\n";
+             reply->error() << "\n";
 }
 
 void AccountLookupDialog::on_pushButton_clicked()
-{if (ui->accountsListWidget->currentItem()) {
+{
+    if (ui->accountsListWidget->currentItem()) {
         CallerDataWindow* m_callerdatawindow = new CallerDataWindow();
         m_callerdatawindow->show();
         m_callerdatawindow->setAccountId(ui->accountsListWidget->currentItem()->data(1).toString());
@@ -105,12 +107,12 @@ void AccountLookupDialog::on_pushButton_clicked()
     } else {
         qDebug("No Account selected in lookup window\n");
         QMessageBox messageBox;
-        messageBox.critical(0,"Error","No account selected");
-        messageBox.setFixedSize(500,200);
+        messageBox.critical(0, "Error", "No account selected");
+        messageBox.setFixedSize(500, 200);
     }
 }
 
-void AccountLookupDialog::on_accountsListWidget_itemDoubleClicked(QListWidgetItem *item)
+void AccountLookupDialog::on_accountsListWidget_itemDoubleClicked(QListWidgetItem* item)
 {
     CallerDataWindow* m_callerdatawindow = new CallerDataWindow();
     m_callerdatawindow->show();
@@ -123,15 +125,18 @@ void AccountLookupDialog::on_pushButton_2_clicked()
     this->hide();
 }
 
-void AccountLookupDialog::on_lineEdit_textChanged(const QString &arg1)
+void AccountLookupDialog::on_lineEdit_textChanged(const QString& arg1)
 {
     qDebug() << "on_lineEdit_textChanged: " << arg1 << "\n";
+
     if (m_dataValue.isArray()) {
         QJsonArray dataArray = m_dataValue.toArray();
         ui->accountsListWidget->clear();
         QJsonObject AccountObj;
+
         for (int i = 0; i < dataArray.count(); i++) {
             AccountObj = dataArray.at(i).toObject();
+
             if (AccountObj.value("name").toString().contains(arg1, Qt::CaseInsensitive)) {
 
                 QListWidgetItem* newItem = new QListWidgetItem;
@@ -141,6 +146,7 @@ void AccountLookupDialog::on_lineEdit_textChanged(const QString &arg1)
             }
         }
     }
+
     ui->total_digits_label->setText(QString("%1").arg(ui->accountsListWidget->count()));
 }
 

@@ -4,7 +4,7 @@
 #include <QAction>
 #include <QAction>
 
-static const char* const kCommentQuery = "/accounts/%1/zzhds/hd_comments/%2";
+static const char* const kCommentQuery = "/accounts/%1/zzhds/informer_comments/%2";
 
 void Comment::focusInEvent(QFocusEvent* e)
 {

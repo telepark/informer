@@ -10,7 +10,7 @@
 #include "addfielddialog.h"
 
 static const char* const kAccountInfoQuery =
-    "/accounts/%1/zzhds/hd_info?consumer_accountId=%2&md5=%3";
+    "/accounts/%1/zzhds/kz_info?consumer_accountId=%2&md5=%3";
 
 static const char* const informerInfoQuery =
     "/accounts/%1/zzhds/informer_info?informer_id=%2&md5=%3";
@@ -19,10 +19,10 @@ static const char* const informerNameFill =
     "/accounts/%1/zzhds/informer_info/informer_name_fill?informer_id=%2&md5=%3";
 
 static const char* const kPostCommentQuery =
-    "/accounts/%1/zzhds/hd_comments";
+    "/accounts/%1/zzhds/informer_comments";
 
 static const char* const kGetCommentQuery =
-    "/accounts/%1/zzhds/hd_comments?informer_id=%2&md5=%3";
+    "/accounts/%1/zzhds/informer_comments?informer_id=%2&md5=%3";
 
 
 CallerDataWindow::CallerDataWindow(QWidget* parent) :

@@ -6,23 +6,23 @@
 #include <QPushButton>
 
 static const char* const kGetAllCommentsQuery =
-        "/accounts/%1/zzhds/hd_comments?md5=%3";
+    "/accounts/%1/zzhds/informer_comments?md5=%3";
 
-AllTasksList::AllTasksList(QWidget *parent) :
+AllTasksList::AllTasksList(QWidget* parent) :
     QMainWindow(parent),
     ui(new Ui::AllTasksList)
 {
     ui->setupUi(this);
 
-//    QWidget * widget = new QWidget();
-//    QPushButton  * leftBut = new QPushButton("Left");
-//    QPushButton  * rightBut = new QPushButton("Right");
-//    QGridLayout * layout = new QGridLayout(widget);
-//    layout->addWidget(leftBut,0,0,0,0,Qt::AlignVCenter | Qt::AlignLeft);
-//    layout->addWidget(rightBut,0,0,0,0,Qt::AlignVCenter | Qt::AlignRight);
-//    this->ui->statusbar->addWidget(widget,1);
+    //    QWidget * widget = new QWidget();
+    //    QPushButton  * leftBut = new QPushButton("Left");
+    //    QPushButton  * rightBut = new QPushButton("Right");
+    //    QGridLayout * layout = new QGridLayout(widget);
+    //    layout->addWidget(leftBut,0,0,0,0,Qt::AlignVCenter | Qt::AlignLeft);
+    //    layout->addWidget(rightBut,0,0,0,0,Qt::AlignVCenter | Qt::AlignRight);
+    //    this->ui->statusbar->addWidget(widget,1);
 
-//    retrieveCommentsList();
+    //    retrieveCommentsList();
 }
 
 AllTasksList::~AllTasksList()
@@ -93,9 +93,9 @@ void AllTasksList::handleConnectionError()
     qWarning("AllTasksList::handleConnectionError ---  error");
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
     qDebug() << "\n AllTasksList::handleConnectionError Reply->errorString() : " <<
-                reply->errorString() << "\n";
+             reply->errorString() << "\n";
     qDebug() << "\n AllTasksList::handleConnectionError Reply->error() : " <<
-                reply->error() << "\n";
+             reply->error() << "\n";
 }
 
 void AllTasksList::onCommentUpdated(int commentId)
