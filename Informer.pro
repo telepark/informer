@@ -38,6 +38,8 @@ SOURCES += \
     defaults.cpp \
     logger.cpp \
     mainwindow/mainwindow.cpp \
+    ticket/ticket.cpp \
+    ticket/ticketscontainer.cpp \
     websocketmanager/websocketmanager.cpp
 
 HEADERS  += \
@@ -54,6 +56,8 @@ HEADERS  += \
     kazoo_auth/singleton.h \
     logger.h \
     mainwindow/mainwindow.h \
+    ticket/ticket.h \
+    ticket/ticketscontainer.h \
     websocketmanager/websocketmanager.h
 
 win32 | macx {
