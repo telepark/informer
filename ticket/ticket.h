@@ -2,12 +2,12 @@
 #define TICKET_H
 
 #include <QObject>
+#include <QTextEdit>
 
-class Ticket
-{
+class Ticket : public QTextEdit {
     Q_OBJECT
-        public:
-                 Ticket();
+  public:
+    Ticket();
 };
 
 #endif // TICKET_H

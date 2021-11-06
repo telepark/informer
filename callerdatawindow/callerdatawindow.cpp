@@ -8,6 +8,8 @@
 #include "comment/commentscontainer.h"
 #include "alltaskslistwindow/alltaskslist.h"
 #include "addfielddialog.h"
+#include "ticket/ticket.h"
+#include "ticket/ticketscontainer.h"
 
 static const char* const kAccountInfoQuery =
     "/accounts/%1/zzhds/kz_info?consumer_accountId=%2&md5=%3";
@@ -657,15 +659,15 @@ void CallerDataWindow::retrieveTicketsListFinished()
     }
 
     m_messagesDataValue = document.object().value("data");
-    qDebug() << "\n CallerDataWindow::retrieveTicketsListFinished m_messagesDataValue: " <<
-             m_messagesDataValue << "\n";
+    //    qDebug() << "\n CallerDataWindow::retrieveTicketsListFinished m_messagesDataValue: " <<
+    //             m_messagesDataValue << "\n";
 
 
     if (m_messagesDataValue.isArray()) {
         QJsonArray dataArray = m_messagesDataValue.toArray();
         qDebug() << "\n CallerDataWindow::retrieveTicketsListFinished dataArray: " << dataArray << "\n";
-        //        CommentsContainer* commentContainer = new CommentsContainer;
-        //        commentContainer->addComments(ui->commentsLayout, dataArray, this);
+        TicketsContainer* ticketContainer = new TicketsContainer;
+        ticketContainer->addTickets(ui->ticketsLayout, dataArray);
     }
 }
 

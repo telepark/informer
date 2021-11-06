@@ -30,7 +30,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_account_details">
        <attribute name="title">
@@ -129,7 +129,7 @@
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_7">
             <item>
-             <layout class="QVBoxLayout" name="messagesLayout"/>
+             <layout class="QVBoxLayout" name="ticketsLayout"/>
             </item>
            </layout>
           </widget>
