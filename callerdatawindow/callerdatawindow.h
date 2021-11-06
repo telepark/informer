@@ -45,6 +45,8 @@ class CallerDataWindow : public QMainWindow {
     void addCommentFinished();
     void retrieveCommentsList();
     void retrieveCommentsListFinished();
+    void retrieveTicketsList();
+    void retrieveTicketsListFinished();
 
   private:
     Ui::CallerDataWindow* ui;
@@ -56,6 +58,7 @@ class CallerDataWindow : public QMainWindow {
     QSettings* m_settings = nullptr;
     QNetworkAccessManager* m_nam = new QNetworkAccessManager(this);
     QJsonValue m_commentsDataValue;
+    QJsonValue m_messagesDataValue;
 
     QMenu* m_company_name_contextmenu = nullptr;
     QMenu* m_informer_phonenumbers_contextmenu = nullptr;

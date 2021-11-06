@@ -24,6 +24,9 @@ static const char* const kPostCommentQuery =
 static const char* const kGetCommentQuery =
     "/accounts/%1/zzhds/informer_comments?informer_id=%2&md5=%3";
 
+static const char* const kGetTicketsQuery =
+    "/accounts/%1/zzhds/informer_tickets?informer_id=%2&md5=%3";
+
 
 CallerDataWindow::CallerDataWindow(QWidget* parent) :
     QMainWindow(parent),
@@ -535,6 +538,10 @@ void CallerDataWindow::on_consumer_tabWidget_tabBarClicked(int index)
     if (index == 1) {
         retrieveCommentsList();
     }
+
+    if (index == 2) {
+        retrieveTicketsList();
+    }
 }
 
 void CallerDataWindow::onCommentUpdated(int commentId)
@@ -599,6 +606,69 @@ void CallerDataWindow::retrieveCommentsListFinished()
         commentContainer->addComments(ui->commentsLayout, dataArray, this);
     }
 }
+
+
+void CallerDataWindow::retrieveTicketsList()
+{
+    if (m_settings) {
+        m_settings->deleteLater();
+    }
+
+    m_settings = new QSettings(dataDirPath() + "/settings.ini",
+                               QSettings::IniFormat,
+                               this);
+    QByteArray hashTemplate(KAZOOAUTH.accountId().toLatin1());
+    hashTemplate.append(":");
+    hashTemplate.append(m_settings->value("md5_hash", kMd5Hash).toByteArray());
+    QByteArray hash = QCryptographicHash::hash(hashTemplate, QCryptographicHash::Md5).toHex();
+    QNetworkRequest req;
+    req.setRawHeader("X-Auth-Token", KAZOOAUTH.authToken().toLatin1());
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    //SSL
+    QSslConfiguration config = req.sslConfiguration();
+    config.setPeerVerifyMode(QSslSocket::VerifyNone);
+    config.setProtocol(QSsl::AnyProtocol);
+    req.setSslConfiguration(config);
+    QString url(m_settings->value("info_url", kInfoUrl).toString());
+    url.append(kGetTicketsQuery);
+    req.setUrl(QUrl(url.arg(KAZOOAUTH.accountId().toLatin1(), QString::number(m_informerId),
+                            hash.data())));
+    qDebug() << "\n req.url(): \n" << req.url() << "\n";
+    QNetworkReply* reply = m_nam->get(req);
+    connect(reply, &QNetworkReply::finished,
+            this, &CallerDataWindow::retrieveTicketsListFinished);
+    connect(reply, &QNetworkReply::errorOccurred,
+            this, &CallerDataWindow::handleConnectionError);
+}
+
+void CallerDataWindow::retrieveTicketsListFinished()
+{
+    qDebug() << "\n Inside CallerDataWindow::retrieveTicketsListFinished \n";
+    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
+    QByteArray data = reply->readAll();
+    reply->deleteLater();
+
+    QJsonParseError error;
+    QJsonDocument document = QJsonDocument::fromJson(data, &error);
+
+    if (error.error != QJsonParseError::NoError) {
+        qDebug() << "\n Inside CallerDataWindow::retrieveTicketsListFinished ERROR!!!! \n";
+        return;
+    }
+
+    m_messagesDataValue = document.object().value("data");
+    qDebug() << "\n CallerDataWindow::retrieveTicketsListFinished m_messagesDataValue: " <<
+             m_messagesDataValue << "\n";
+
+
+    if (m_messagesDataValue.isArray()) {
+        QJsonArray dataArray = m_messagesDataValue.toArray();
+        qDebug() << "\n CallerDataWindow::retrieveTicketsListFinished dataArray: " << dataArray << "\n";
+        //        CommentsContainer* commentContainer = new CommentsContainer;
+        //        commentContainer->addComments(ui->commentsLayout, dataArray, this);
+    }
+}
+
 
 void CallerDataWindow::renameCompany(const QString& newName)
 {

@@ -30,7 +30,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_account_details">
        <attribute name="title">
@@ -114,22 +114,25 @@
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QListWidget" name="listWidget">
-          <item>
-           <property name="text">
-            <string>sgrsagfrs</string>
+         <widget class="QScrollArea" name="scrollArea_messages">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents_2">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>700</width>
+             <height>416</height>
+            </rect>
            </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>srgaf</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>saf</string>
-           </property>
-          </item>
+           <layout class="QVBoxLayout" name="verticalLayout_7">
+            <item>
+             <layout class="QVBoxLayout" name="messagesLayout"/>
+            </item>
+           </layout>
+          </widget>
          </widget>
         </item>
        </layout>
