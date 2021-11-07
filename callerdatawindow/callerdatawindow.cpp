@@ -658,13 +658,10 @@ void CallerDataWindow::retrieveTicketsListFinished()
         return;
     }
 
-    m_messagesDataValue = document.object().value("data");
-    //    qDebug() << "\n CallerDataWindow::retrieveTicketsListFinished m_messagesDataValue: " <<
-    //             m_messagesDataValue << "\n";
+    m_ticketsDataValue = document.object().value("data");
 
-
-    if (m_messagesDataValue.isArray()) {
-        QJsonArray dataArray = m_messagesDataValue.toArray();
+    if (m_ticketsDataValue.isArray()) {
+        QJsonArray dataArray = m_ticketsDataValue.toArray();
         qDebug() << "\n CallerDataWindow::retrieveTicketsListFinished dataArray: " << dataArray << "\n";
         TicketsContainer* ticketContainer = new TicketsContainer;
         ticketContainer->addTickets(ui->ticketsLayout, dataArray);

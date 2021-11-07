@@ -19,11 +19,7 @@ class TicketsContainer : public QObject {
   private:
     //    AllTasksList* m_allTaskWin = nullptr;
 
-  signals:
-    //    void linkActivated(QString );
 
-  private slots:
-    //    void on_linkActivated(QString );
 
 };
 

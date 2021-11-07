@@ -19,12 +19,11 @@
 
 #include "callerdatawindow/callerdatawindow.h"
 
-class Comment : public QTextEdit
-{
+class Comment : public QTextEdit {
     Q_OBJECT
 
-public:
-    explicit Comment(QWidget *parent = nullptr): QTextEdit(parent){
+  public:
+    explicit Comment(QWidget* parent = nullptr): QTextEdit(parent) {
         if (m_settings) {
             m_settings->deleteLater();
         }
@@ -32,7 +31,6 @@ public:
         m_settings = new QSettings(dataDirPath() + "/settings.ini",
                                    QSettings::IniFormat,
                                    this);
-//        QObject::connect(this,&Comment::commentUpdated, *parent, &CallerDataWindow::onCommentUpdated);
     }
     void setCommentHTML(QString commentHTML);
     void setInformerId(int informerId);
@@ -40,7 +38,7 @@ public:
     void setModified(int modified);
     void setCommentId(int commentId);
 
-private:
+  private:
     QString m_commentHTML;
     QString m_informerName;
     int m_informerId;
@@ -54,15 +52,15 @@ private:
     void updateCommentFinished();
     void handleConnectionError();
 
-protected:
+  protected:
     void focusInEvent(QFocusEvent* e);
     void focusOutEvent(QFocusEvent* e);
-    void mousePressEvent(QMouseEvent *e);
+    void mousePressEvent(QMouseEvent* e);
 
-signals:
+  signals:
     void commentUpdated(int);
 
-public  slots:
+  public  slots:
     void SaveActionSlot();
     void CancelActionSlot();
     void EditActionSlot();
